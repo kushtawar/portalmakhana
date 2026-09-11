@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Container from "@/components/layout/Container";
-import ProductImagePlaceholder from "@/components/product/ProductImagePlaceholder";
+import PacketArt from "@/components/product/PacketArt";
 import ProductPurchasePanel from "@/components/product/ProductPurchasePanel";
 import RelatedProducts from "@/components/product/RelatedProducts";
-import { getProductBySlug, getRelatedProducts, products } from "@/lib/data/products";
+import { getPackType, getProductBySlug, getRelatedProducts, products } from "@/lib/data/products";
 
 export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -39,7 +39,8 @@ export default async function ProductDetailPage({
     <Container className="py-12">
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="grid grid-cols-4 gap-3 sm:grid-cols-1">
-          <ProductImagePlaceholder
+          <PacketArt
+            packType={getPackType(product)}
             label={product.imageLabels[0]}
             className="col-span-4 aspect-square w-full rounded-2xl sm:col-span-1"
           />

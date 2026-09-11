@@ -1,4 +1,11 @@
+import type { PackType } from "@/components/product/PacketArt";
 import type { Product } from "@/lib/types";
+
+const MASALA_FLAVOURS = new Set(["Peri Peri", "Pudina Masala", "Cheese & Herb"]);
+
+export function getPackType(product: Product): PackType {
+  return product.flavour && MASALA_FLAVOURS.has(product.flavour) ? "masala" : "makhana";
+}
 
 export const products: Product[] = [
   {

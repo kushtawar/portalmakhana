@@ -5,6 +5,7 @@ import WhyItarIntakes from "@/components/home/WhyItarIntakes";
 import OriginStory from "@/components/home/OriginStory";
 import WholesaleExportCta from "@/components/home/WholesaleExportCta";
 import StoriesHighlights from "@/components/home/StoriesHighlights";
+import Testimonials from "@/components/home/Testimonials";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <OriginStory />
       <WholesaleExportCta />
       <StoriesHighlights />
+      <Testimonials />
     </>
   );
 }

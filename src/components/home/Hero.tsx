@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Container from "@/components/layout/Container";
-import ProductImagePlaceholder from "@/components/product/ProductImagePlaceholder";
+import PacketArt from "@/components/product/PacketArt";
 
 export default function Hero() {
   return (
@@ -34,8 +34,9 @@ export default function Hero() {
           </div>
         </div>
 
-        <ProductImagePlaceholder
-          label="ItarIntakes Hero Photography"
+        <PacketArt
+          packType="makhana"
+          label="Premium Makhana"
           className="aspect-[4/3] w-full rounded-2xl"
         />
       </Container>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { formatInr } from "@/lib/format";
-import ProductImagePlaceholder from "@/components/product/ProductImagePlaceholder";
+import { getPackType } from "@/lib/data/products";
+import PacketArt from "@/components/product/PacketArt";
 import Badge from "@/components/ui/Badge";
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -14,7 +15,11 @@ export default function ProductCard({ product }: { product: Product }) {
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-square w-full overflow-hidden">
-        <ProductImagePlaceholder label={product.imageLabels[0]} className="h-full w-full" />
+        <PacketArt
+          packType={getPackType(product)}
+          label={product.imageLabels[0]}
+          className="h-full w-full"
+        />
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {product.bestseller ? <Badge variant="primary">Bestseller</Badge> : null}
           {product.featured && !product.bestseller ? (

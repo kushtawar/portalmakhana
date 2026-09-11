@@ -12,15 +12,17 @@ import type { CartItem } from "@/lib/types";
 
 const STORAGE_KEY = "itarintakes:cart";
 
+const EMPTY_CART: CartItem[] = [];
+
 let cachedItems: CartItem[] | null = null;
 let listeners: (() => void)[] = [];
 
 function readCart(): CartItem[] {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    return raw ? JSON.parse(raw) : EMPTY_CART;
   } catch {
-    return [];
+    return EMPTY_CART;
   }
 }
 
@@ -30,7 +32,7 @@ function getSnapshot(): CartItem[] {
 }
 
 function getServerSnapshot(): CartItem[] {
-  return [];
+  return EMPTY_CART;
 }
 
 function subscribe(listener: () => void): () => void {

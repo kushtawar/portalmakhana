@@ -62,7 +62,7 @@ export default function EnquiryForm({
       <div className="sm:col-span-2">
         <button
           type="submit"
-          className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-dark"
+          className="rounded-full bg-gradient-to-r from-primary to-primary-dark px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
         >
           {submitLabel}
         </button>

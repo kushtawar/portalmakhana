@@ -21,7 +21,7 @@ export default function Hero() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/shop"
-              className="inline-flex items-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark"
+              className="inline-flex items-center rounded-full bg-gradient-to-r from-primary to-primary-dark px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
             >
               Shop Makhana
             </Link>

@@ -15,7 +15,7 @@ export default function CartPage() {
         <SectionHeading title="Your cart is empty" align="center" />
         <Link
           href="/shop"
-          className="mt-6 inline-flex items-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-dark"
+          className="mt-6 inline-flex items-center rounded-full bg-gradient-to-r from-primary to-primary-dark px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
         >
           Continue shopping
         </Link>
@@ -98,7 +98,7 @@ export default function CartPage() {
           </div>
           <Link
             href="/checkout"
-            className="mt-5 flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-dark"
+            className="mt-5 flex items-center justify-center rounded-full bg-gradient-to-r from-primary to-primary-dark px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
           >
             Proceed to checkout
           </Link>

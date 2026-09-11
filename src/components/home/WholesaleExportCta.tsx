@@ -5,7 +5,7 @@ export default function WholesaleExportCta() {
   return (
     <section className="py-14">
       <Container>
-        <div className="grid gap-6 rounded-2xl bg-primary px-6 py-10 text-white sm:grid-cols-2 sm:px-10">
+        <div className="grid gap-6 rounded-2xl bg-gradient-to-br from-primary-soft via-primary to-primary-deep px-6 py-10 text-white sm:grid-cols-2 sm:px-10">
           <div>
             <h2 className="text-2xl font-semibold">Wholesale &amp; Distribution</h2>
             <p className="mt-2 text-sm text-white/90">

@@ -15,7 +15,7 @@ export default function CheckoutPage() {
         <SectionHeading title="Your cart is empty" align="center" />
         <Link
           href="/shop"
-          className="mt-6 inline-flex items-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-dark"
+          className="mt-6 inline-flex items-center rounded-full bg-gradient-to-r from-primary to-primary-dark px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
         >
           Continue shopping
         </Link>
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled
-            className="mt-5 w-full cursor-not-allowed rounded-full bg-primary/40 px-6 py-3 text-sm font-semibold text-white"
+            className="mt-5 w-full cursor-not-allowed rounded-full bg-gradient-to-r from-primary to-primary-dark px-6 py-3 text-sm font-semibold text-white opacity-40"
           >
             Payment coming soon
           </button>

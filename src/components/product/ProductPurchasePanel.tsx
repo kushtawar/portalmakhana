@@ -110,7 +110,7 @@ export default function ProductPurchasePanel({ product }: { product: Product }) 
           type="button"
           disabled={!inStock}
           onClick={buyNow}
-          className="flex-1 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 rounded-full bg-gradient-to-r from-primary to-primary-dark px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Buy now
         </button>

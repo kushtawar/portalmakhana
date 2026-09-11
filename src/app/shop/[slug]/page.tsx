@@ -1,0 +1,86 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Container from "@/components/layout/Container";
+import ProductImagePlaceholder from "@/components/product/ProductImagePlaceholder";
+import ProductPurchasePanel from "@/components/product/ProductPurchasePanel";
+import RelatedProducts from "@/components/product/RelatedProducts";
+import { getProductBySlug, getRelatedProducts, products } from "@/lib/data/products";
+
+export function generateStaticParams() {
+  return products.map((product) => ({ slug: product.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
+  if (!product) return {};
+  return {
+    title: product.name,
+    description: product.shortDescription,
+  };
+}
+
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
+  if (!product || !product.active) notFound();
+
+  const related = getRelatedProducts(product);
+
+  return (
+    <Container className="py-12">
+      <div className="grid gap-10 lg:grid-cols-2">
+        <div className="grid grid-cols-4 gap-3 sm:grid-cols-1">
+          <ProductImagePlaceholder
+            label={product.imageLabels[0]}
+            className="col-span-4 aspect-square w-full rounded-2xl sm:col-span-1"
+          />
+        </div>
+
+        <div>
+          <p className="text-sm font-medium text-primary">
+            {product.grade ? `Grade: ${product.grade}` : "Makhana"}
+          </p>
+          <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-3xl">
+            {product.name}
+          </h1>
+          <p className="mt-2 text-foreground-muted">{product.shortDescription}</p>
+
+          <div className="mt-6">
+            <ProductPurchasePanel product={product} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-14 grid gap-10 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <h2 className="text-lg font-semibold text-foreground">Description</h2>
+          <p className="mt-3 text-sm leading-relaxed text-foreground-muted">
+            {product.longDescription}
+          </p>
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Product details</h2>
+          <dl className="mt-3 space-y-2">
+            {product.attributes.map((attribute) => (
+              <div key={attribute.label} className="flex justify-between text-sm">
+                <dt className="text-foreground-muted">{attribute.label}</dt>
+                <dd className="font-medium text-foreground">{attribute.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+
+      <RelatedProducts products={related} />
+    </Container>
+  );
+}

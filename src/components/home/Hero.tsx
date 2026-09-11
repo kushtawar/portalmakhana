@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Container from "@/components/layout/Container";
-import PacketArt from "@/components/product/PacketArt";
+import ProductImage from "@/components/product/ProductImage";
 
 export default function Hero() {
   return (
@@ -34,9 +34,12 @@ export default function Hero() {
           </div>
         </div>
 
-        <PacketArt
+        <ProductImage
+          imagePath="/products/classic-roasted-makhana.jpg"
           packType="makhana"
           label="Premium Makhana"
+          priority
+          sizes="(min-width: 1024px) 50vw, 100vw"
           className="aspect-[4/3] w-full rounded-2xl"
         />
       </Container>

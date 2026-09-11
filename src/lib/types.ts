@@ -7,7 +7,7 @@ export interface ProductVariant {
   stock: number;
 }
 
-export type ProductCategory = "roasted" | "flavoured" | "raw" | "gift-pack";
+export type ProductCategory = "roasted" | "flavoured" | "raw" | "gift-pack" | "spice";
 
 export interface ProductAttribute {
   label: string;
@@ -27,6 +27,7 @@ export interface Product {
   priceIncludesTax: boolean;
   variants: ProductVariant[];
   imageLabels: string[];
+  imagePath?: string;
   featured?: boolean;
   bestseller?: boolean;
   active: boolean;

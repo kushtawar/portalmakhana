@@ -42,3 +42,6 @@ next-env.d.ts
 
 # source requirements doc (not app code)
 ItarIntakes_Complete_Website_Requirements_for_Claude_Code.docx
+
+# raw/staging image uploads not referenced by the app (see public/products for the served assets)
+/public/images/

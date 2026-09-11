@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Container from "@/components/layout/Container";
-import PacketArt from "@/components/product/PacketArt";
+import ProductImage from "@/components/product/ProductImage";
 import ProductPurchasePanel from "@/components/product/ProductPurchasePanel";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import { getPackType, getProductBySlug, getRelatedProducts, products } from "@/lib/data/products";
@@ -39,16 +39,23 @@ export default async function ProductDetailPage({
     <Container className="py-12">
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="grid grid-cols-4 gap-3 sm:grid-cols-1">
-          <PacketArt
+          <ProductImage
+            imagePath={product.imagePath}
             packType={getPackType(product)}
             label={product.imageLabels[0]}
+            priority
+            sizes="(min-width: 1024px) 50vw, 100vw"
             className="col-span-4 aspect-square w-full rounded-2xl sm:col-span-1"
           />
         </div>
 
         <div>
           <p className="text-sm font-medium text-primary">
-            {product.grade ? `Grade: ${product.grade}` : "Makhana"}
+            {product.grade
+              ? `Grade: ${product.grade}`
+              : product.category === "spice"
+                ? "Pure Indian Spice"
+                : "Makhana"}
           </p>
           <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-3xl">
             {product.name}

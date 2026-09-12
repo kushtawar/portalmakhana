@@ -35,7 +35,7 @@ export default function ExportPage() {
         description="For international buyers seeking bulk supply or private-label packaging. Our team will follow up with documentation and export details."
       />
       <div className="mt-8 max-w-2xl">
-        <EnquiryForm fields={FIELDS} submitLabel="Submit export enquiry" />
+        <EnquiryForm type="export" fields={FIELDS} submitLabel="Submit export enquiry" />
       </div>
     </Container>
   );

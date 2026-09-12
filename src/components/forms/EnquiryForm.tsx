@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import type { EnquiryType } from "@/lib/types";
 
 export interface EnquiryFieldConfig {
   name: string;
@@ -11,17 +12,51 @@ export interface EnquiryFieldConfig {
 }
 
 export default function EnquiryForm({
+  type,
   fields,
   submitLabel = "Submit enquiry",
 }: {
+  type: EnquiryType;
   fields: EnquiryFieldConfig[];
   submitLabel?: string;
 }) {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+    setError(null);
+    setSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      type,
+      fields: fields
+        .map((field) => ({
+          label: field.label,
+          value: String(formData.get(field.name) ?? "").trim(),
+        }))
+        .filter((entry) => entry.value.length > 0),
+    };
+
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error("Request failed");
+      }
+
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong submitting your enquiry. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -45,12 +80,14 @@ export default function EnquiryForm({
           {field.label}
           {field.type === "textarea" ? (
             <textarea
+              name={field.name}
               required={field.required}
               rows={4}
               className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
             />
           ) : (
             <input
+              name={field.name}
               required={field.required}
               type={field.type ?? "text"}
               className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
@@ -59,12 +96,15 @@ export default function EnquiryForm({
         </label>
       ))}
 
+      {error ? <p className="text-sm text-danger sm:col-span-2">{error}</p> : null}
+
       <div className="sm:col-span-2">
         <button
           type="submit"
-          className="rounded-full bg-gradient-to-r from-primary to-primary-deep px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+          disabled={submitting}
+          className="rounded-full bg-gradient-to-r from-primary to-primary-deep px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {submitLabel}
+          {submitting ? "Submitting..." : submitLabel}
         </button>
       </div>
     </form>

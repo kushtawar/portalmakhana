@@ -5,6 +5,7 @@ export interface ProductVariant {
   compareAtPrice?: number;
   sku: string;
   stock: number;
+  lowStockThreshold?: number;
 }
 
 export type ProductCategory = "roasted" | "flavoured" | "raw" | "gift-pack" | "spice";
@@ -67,6 +68,24 @@ export interface Promotion {
   startAt: string;
   endAt: string;
   active: boolean;
+}
+
+export type EnquiryType = "wholesale" | "export";
+export type EnquiryStatus = "NEW" | "CONTACTED" | "QUALIFIED" | "QUOTED" | "WON" | "LOST";
+
+export interface EnquiryFieldEntry {
+  label: string;
+  value: string;
+}
+
+export interface Enquiry {
+  id: string;
+  type: EnquiryType;
+  // First entry is always the contact name field, by form convention.
+  fields: EnquiryFieldEntry[];
+  status: EnquiryStatus;
+  notes?: string;
+  createdAt: string;
 }
 
 export interface CartItem {

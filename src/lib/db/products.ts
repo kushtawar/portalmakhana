@@ -59,6 +59,36 @@ export async function getFeaturedProducts(limit = 4): Promise<Product[]> {
   return docs.map((doc) => toProduct(doc as ProductDoc & { _id: unknown }));
 }
 
+export interface StockAlert {
+  product: Product;
+  variant: Product["variants"][number];
+}
+
+export async function getStockAlerts(): Promise<{
+  lowStock: StockAlert[];
+  outOfStock: StockAlert[];
+}> {
+  await connectToDatabase();
+  const docs = await ProductModel.find({ active: true }).lean();
+  const products = docs.map((doc) => toProduct(doc as ProductDoc & { _id: unknown }));
+
+  const lowStock: StockAlert[] = [];
+  const outOfStock: StockAlert[] = [];
+
+  for (const product of products) {
+    for (const variant of product.variants) {
+      const threshold = variant.lowStockThreshold ?? 10;
+      if (variant.stock === 0) {
+        outOfStock.push({ product, variant });
+      } else if (variant.stock <= threshold) {
+        lowStock.push({ product, variant });
+      }
+    }
+  }
+
+  return { lowStock, outOfStock };
+}
+
 export async function getRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
   await connectToDatabase();
   const sameCategory = await ProductModel.find({

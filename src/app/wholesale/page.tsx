@@ -36,7 +36,7 @@ export default function WholesalePage() {
         description="For distributors, retailers and recurring bulk buyers. Our team will respond with commercial terms and next steps."
       />
       <div className="mt-8 max-w-2xl">
-        <EnquiryForm fields={FIELDS} submitLabel="Submit wholesale enquiry" />
+        <EnquiryForm type="wholesale" fields={FIELDS} submitLabel="Submit wholesale enquiry" />
       </div>
     </Container>
   );

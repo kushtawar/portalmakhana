@@ -10,6 +10,7 @@ export interface ProductVariantDoc {
   compareAtPrice?: number;
   sku: string;
   stock: number;
+  lowStockThreshold?: number;
 }
 
 export interface ProductAttributeDoc {
@@ -48,6 +49,7 @@ const VariantSchema = new Schema<ProductVariantDoc>(
     compareAtPrice: { type: Number, min: 0 },
     sku: { type: String, required: true },
     stock: { type: Number, required: true, min: 0, default: 0 },
+    lowStockThreshold: { type: Number, min: 0, default: 10 },
   },
   { _id: false }
 );

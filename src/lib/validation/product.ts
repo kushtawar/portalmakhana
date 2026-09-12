@@ -9,6 +9,7 @@ export const productVariantSchema = z.object({
   compareAtPrice: z.number().min(0).optional(),
   sku: z.string().min(1),
   stock: z.number().int().min(0),
+  lowStockThreshold: z.number().int().min(0).optional(),
 });
 
 export const productAttributeSchema = z.object({

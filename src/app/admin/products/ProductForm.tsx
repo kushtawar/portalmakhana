@@ -226,7 +226,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         </div>
         <div className="mt-4 space-y-3">
           {variants.map((variant, index) => (
-            <div key={variant.id} className="grid grid-cols-2 gap-3 rounded-lg border border-border p-3 sm:grid-cols-5">
+            <div key={variant.id} className="grid grid-cols-2 gap-3 rounded-lg border border-border p-3 sm:grid-cols-6">
               <input
                 required
                 placeholder="Label (e.g. 100g)"
@@ -257,6 +257,16 @@ export default function ProductForm({ product }: { product?: Product }) {
                 placeholder="Stock"
                 value={variant.stock}
                 onChange={(e) => updateVariant(index, { stock: Number(e.target.value) })}
+                className="rounded-lg border border-border px-2 py-1.5 text-sm focus:border-primary focus:outline-none"
+              />
+              <input
+                type="number"
+                min={0}
+                placeholder="Low-stock at"
+                value={variant.lowStockThreshold ?? 10}
+                onChange={(e) =>
+                  updateVariant(index, { lowStockThreshold: Number(e.target.value) })
+                }
                 className="rounded-lg border border-border px-2 py-1.5 text-sm focus:border-primary focus:outline-none"
               />
               <button

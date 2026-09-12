@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 import ProductImage from "@/components/product/ProductImage";
+import { getActiveBanner } from "@/lib/db/banners";
 
 const STATS = [
   { value: "10+", label: "Years of Experience" },
@@ -49,29 +50,35 @@ function BadgeIcon({ icon }: { icon: "leaf" | "heart" | "globe" }) {
   );
 }
 
-export default function Hero() {
+export default async function Hero() {
+  const banner = await getActiveBanner("home-hero");
+
+  const eyebrow = banner?.eyebrow || "Natural · Nutritious · From Patna";
+  const headline = banner?.headline || "Premium Makhana from Patna";
+  const subtext =
+    banner?.subtext ||
+    "Pure. Crunchy. Wholesome. Sourced from the fertile lands of Patna, our Makhana brings you the goodness of nature with 10+ years of trusted experience — supplying across India and to global markets.";
+  const ctaLabel = banner?.ctaLabel || "Shop Now";
+  const ctaHref = banner?.ctaHref || "/shop";
+  const imagePath = banner?.imagePath || "/products/classic-roasted-makhana.jpg";
+
   return (
     <section className="bg-gradient-to-b from-background-subtle to-background">
       <Container className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-2">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-            Natural &middot; Nutritious &middot; From Patna
+            {eyebrow}
           </p>
           <h1 className="mt-3 font-display text-4xl font-semibold leading-tight text-primary-dark sm:text-5xl">
-            Premium Makhana from Patna <span aria-hidden>🍃</span>
+            {headline} <span aria-hidden>🍃</span>
           </h1>
-          <p className="mt-4 max-w-lg text-foreground-muted">
-            Pure. Crunchy. Wholesome. Sourced from the fertile lands of Patna,
-            our Makhana brings you the goodness of nature with 10+ years of
-            trusted experience &mdash; supplying across India and to global
-            markets.
-          </p>
+          <p className="mt-4 max-w-lg text-foreground-muted">{subtext}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/shop"
+              href={ctaHref}
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-deep px-6 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
             >
-              Shop Now
+              {ctaLabel}
               <span aria-hidden>&rarr;</span>
             </Link>
             <Link
@@ -106,7 +113,7 @@ export default function Hero() {
 
         <div className="relative">
           <ProductImage
-            imagePath="/products/classic-roasted-makhana.jpg"
+            imagePath={imagePath}
             packType="makhana"
             label="Premium Makhana"
             priority

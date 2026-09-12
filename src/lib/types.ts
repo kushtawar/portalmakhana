@@ -70,6 +70,20 @@ export interface Promotion {
   active: boolean;
 }
 
+export type BannerPlacement = "home-hero";
+
+export interface Banner {
+  id: string;
+  placement: BannerPlacement;
+  eyebrow?: string;
+  headline: string;
+  subtext: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  imagePath?: string;
+  active: boolean;
+}
+
 export type EnquiryType = "wholesale" | "export";
 export type EnquiryStatus = "NEW" | "CONTACTED" | "QUALIFIED" | "QUOTED" | "WON" | "LOST";
 

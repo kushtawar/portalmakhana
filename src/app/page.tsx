@@ -7,6 +7,8 @@ import WholesaleExportCta from "@/components/home/WholesaleExportCta";
 import StoriesHighlights from "@/components/home/StoriesHighlights";
 import Testimonials from "@/components/home/Testimonials";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>

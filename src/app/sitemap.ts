@@ -1,11 +1,15 @@
 import type { MetadataRoute } from "next";
-import { products } from "@/lib/data/products";
+import { listProducts } from "@/lib/db/products";
 import { articles } from "@/lib/data/articles";
 
 // Placeholder production domain until the custom domain goes live.
 const BASE_URL = "https://itarintakes.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const products = await listProducts({ activeOnly: true });
+
   const staticRoutes = [
     "",
     "/shop",
@@ -25,12 +29,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
   }));
 
-  const productRoutes = products
-    .filter((product) => product.active)
-    .map((product) => ({
-      url: `${BASE_URL}/shop/${product.slug}`,
-      lastModified: new Date(),
-    }));
+  const productRoutes = products.map((product) => ({
+    url: `${BASE_URL}/shop/${product.slug}`,
+    lastModified: new Date(),
+  }));
 
   const articleRoutes = articles.map((article) => ({
     url: `${BASE_URL}/stories/${article.slug}`,

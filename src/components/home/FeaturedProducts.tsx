@@ -2,10 +2,10 @@ import Link from "next/link";
 import Container from "@/components/layout/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ProductCard from "@/components/product/ProductCard";
-import { products } from "@/lib/data/products";
+import { getFeaturedProducts } from "@/lib/db/products";
 
-export default function FeaturedProducts() {
-  const featured = products.filter((product) => product.featured).slice(0, 4);
+export default async function FeaturedProducts() {
+  const featured = await getFeaturedProducts(4);
 
   return (
     <section className="py-14">

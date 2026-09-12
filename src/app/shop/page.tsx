@@ -3,15 +3,17 @@ import { Suspense } from "react";
 import Container from "@/components/layout/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ShopGrid from "@/components/shop/ShopGrid";
-import { products } from "@/lib/data/products";
+import { listProducts } from "@/lib/db/products";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Shop",
   description: "Browse premium roasted, flavoured and raw Makhana from ItarIntakes.",
 };
 
-export default function ShopPage() {
-  const activeProducts = products.filter((product) => product.active);
+export default async function ShopPage() {
+  const activeProducts = await listProducts({ activeOnly: true });
 
   return (
     <Container className="py-12">

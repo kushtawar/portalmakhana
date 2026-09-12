@@ -4,11 +4,10 @@ import Container from "@/components/layout/Container";
 import ProductImage from "@/components/product/ProductImage";
 import ProductPurchasePanel from "@/components/product/ProductPurchasePanel";
 import RelatedProducts from "@/components/product/RelatedProducts";
-import { getPackType, getProductBySlug, getRelatedProducts, products } from "@/lib/data/products";
+import { getPackType } from "@/lib/data/products";
+import { getProductBySlug, getRelatedProducts } from "@/lib/db/products";
 
-export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -16,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) return {};
   return {
     title: product.name,
@@ -30,10 +29,10 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product || !product.active) notFound();
 
-  const related = getRelatedProducts(product);
+  const related = await getRelatedProducts(product);
 
   return (
     <Container className="py-12">

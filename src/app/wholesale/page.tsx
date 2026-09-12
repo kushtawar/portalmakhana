@@ -4,7 +4,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import EnquiryForm, { type EnquiryFieldConfig } from "@/components/forms/EnquiryForm";
 
 export const metadata: Metadata = {
-  title: "Wholesale",
+  title: "Wholesale Order",
   description:
     "Submit a wholesale or distribution enquiry for recurring Makhana supply, commercial terms and territory support.",
 };

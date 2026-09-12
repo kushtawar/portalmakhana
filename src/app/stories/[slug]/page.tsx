@@ -3,11 +3,9 @@ import { notFound } from "next/navigation";
 import Container from "@/components/layout/Container";
 import ProductImagePlaceholder from "@/components/product/ProductImagePlaceholder";
 import Badge from "@/components/ui/Badge";
-import { articles, getArticleBySlug } from "@/lib/data/articles";
+import { getArticleBySlug } from "@/lib/db/articles";
 
-export function generateStaticParams() {
-  return articles.map((article) => ({ slug: article.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -15,11 +13,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug);
   if (!article) return {};
   return {
-    title: article.title,
-    description: article.excerpt,
+    title: article.seoTitle || article.title,
+    description: article.seoDescription || article.excerpt,
   };
 }
 
@@ -29,8 +27,8 @@ export default async function ArticleDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
-  if (!article) notFound();
+  const article = await getArticleBySlug(slug);
+  if (!article || article.status !== "published") notFound();
 
   return (
     <Container className="max-w-3xl py-12">

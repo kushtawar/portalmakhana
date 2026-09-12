@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Container from "@/components/layout/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import StoriesGrid from "@/components/stories/StoriesGrid";
-import { articles } from "@/lib/data/articles";
+import { listArticles } from "@/lib/db/articles";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Stories & Recipes",
@@ -10,7 +12,9 @@ export const metadata: Metadata = {
     "Stories, recipes, Makhana knowledge, health and nutrition articles, and company updates from ItarIntakes.",
 };
 
-export default function StoriesPage() {
+export default async function StoriesPage() {
+  const articles = await listArticles({ publishedOnly: true });
+
   return (
     <Container className="py-12">
       <SectionHeading

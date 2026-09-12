@@ -17,6 +17,7 @@ export const articles: Article[] = [
     category: "Stories",
     tags: ["origin", "patna", "brand"],
     publishDate: "2026-01-15",
+    status: "published",
     featured: true,
   },
   {
@@ -35,6 +36,7 @@ export const articles: Article[] = [
     category: "Makhana Knowledge",
     tags: ["grades", "suta", "quality"],
     publishDate: "2026-02-02",
+    status: "published",
   },
   {
     id: "a3",
@@ -51,6 +53,7 @@ export const articles: Article[] = [
     category: "Recipes",
     tags: ["recipe", "snack", "chaat"],
     publishDate: "2026-02-20",
+    status: "published",
   },
   {
     id: "a4",
@@ -68,6 +71,7 @@ export const articles: Article[] = [
     category: "Health & Nutrition",
     tags: ["health", "nutrition"],
     publishDate: "2026-03-05",
+    status: "published",
   },
   {
     id: "a5",
@@ -83,6 +87,7 @@ export const articles: Article[] = [
     category: "Company News",
     tags: ["shipping", "update"],
     publishDate: "2026-03-18",
+    status: "published",
   },
   {
     id: "a6",
@@ -98,6 +103,7 @@ export const articles: Article[] = [
     category: "Recipes",
     tags: ["recipe", "festive", "kheer"],
     publishDate: "2026-03-25",
+    status: "published",
   },
 ];
 

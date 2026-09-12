@@ -42,6 +42,8 @@ export type ArticleCategory =
   | "Health & Nutrition"
   | "Company News";
 
+export type ArticleStatus = "draft" | "published" | "archived";
+
 export interface Article {
   id: string;
   slug: string;
@@ -49,11 +51,15 @@ export interface Article {
   excerpt: string;
   content: string[];
   coverImageLabel: string;
+  imagePath?: string;
   author: string;
   category: ArticleCategory;
   tags: string[];
   publishDate: string;
   featured?: boolean;
+  status: ArticleStatus;
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface Promotion {

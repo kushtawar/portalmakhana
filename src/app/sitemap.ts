@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listProducts } from "@/lib/db/products";
-import { articles } from "@/lib/data/articles";
+import { listArticles } from "@/lib/db/articles";
 
 // Placeholder production domain until the custom domain goes live.
 const BASE_URL = "https://itarintakes.com";
@@ -8,7 +8,10 @@ const BASE_URL = "https://itarintakes.com";
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = await listProducts({ activeOnly: true });
+  const [products, articles] = await Promise.all([
+    listProducts({ activeOnly: true }),
+    listArticles({ publishedOnly: true }),
+  ]);
 
   const staticRoutes = [
     "",

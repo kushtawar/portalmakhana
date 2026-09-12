@@ -2,10 +2,15 @@ import Link from "next/link";
 import Container from "@/components/layout/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ArticleCard from "@/components/stories/ArticleCard";
-import { articles } from "@/lib/data/articles";
+import { listArticles } from "@/lib/db/articles";
 
-export default function StoriesHighlights() {
-  const highlights = articles.slice(0, 3);
+export default async function StoriesHighlights() {
+  const articles = await listArticles({ publishedOnly: true });
+  const highlights = [...articles]
+    .sort((a, b) => Number(b.featured) - Number(a.featured))
+    .slice(0, 3);
+
+  if (highlights.length === 0) return null;
 
   return (
     <section className="bg-background-subtle py-14">

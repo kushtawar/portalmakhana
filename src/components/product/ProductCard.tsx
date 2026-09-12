@@ -49,7 +49,7 @@ export default function ProductCard({ product }: { product: Product }) {
             ) : null}
           </div>
           <span
-            className={`text-xs font-medium ${inStock ? "text-accent" : "text-danger"}`}
+            className={`text-xs font-medium ${inStock ? "text-primary-dark" : "text-danger"}`}
           >
             {inStock ? "In stock" : "Out of stock"}
           </span>

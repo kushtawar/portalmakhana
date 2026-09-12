@@ -25,7 +25,7 @@ const TESTIMONIALS = [
 
 function Stars() {
   return (
-    <div className="flex gap-0.5 text-primary">
+    <div className="flex gap-0.5 text-accent">
       {Array.from({ length: 5 }).map((_, index) => (
         <svg key={index} viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden>
           <path d="M10 1.5l2.6 5.6 6.1.6-4.6 4.1 1.3 6L10 14.6l-5.4 3.2 1.3-6-4.6-4.1 6.1-.6L10 1.5z" />

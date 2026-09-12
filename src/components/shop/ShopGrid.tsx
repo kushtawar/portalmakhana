@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Product, ProductCategory } from "@/lib/types";
 import ProductCard from "@/components/product/ProductCard";
 
@@ -14,19 +15,31 @@ const CATEGORY_LABELS: Record<ProductCategory, string> = {
 
 export default function ShopGrid({ products }: { products: Product[] }) {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q")?.trim().toLowerCase() ?? "";
 
   const categories = useMemo(
     () => Array.from(new Set(products.map((product) => product.category))),
     [products]
   );
 
-  const filtered =
-    category === "all"
-      ? products
-      : products.filter((product) => product.category === category);
+  const filtered = products
+    .filter((product) => category === "all" || product.category === category)
+    .filter(
+      (product) =>
+        !query ||
+        product.name.toLowerCase().includes(query) ||
+        product.flavour?.toLowerCase().includes(query)
+    );
 
   return (
     <div>
+      {query ? (
+        <p className="mb-4 text-sm text-foreground-muted">
+          Showing results for &ldquo;{searchParams.get("q")}&rdquo;
+        </p>
+      ) : null}
+
       <div className="flex flex-wrap gap-2">
         <button
           type="button"

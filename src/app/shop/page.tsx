@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Container from "@/components/layout/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ShopGrid from "@/components/shop/ShopGrid";
@@ -20,7 +21,9 @@ export default function ShopPage() {
         description="Weight and pack options are shown on each product. Prices include applicable GST unless noted."
       />
       <div className="mt-8">
-        <ShopGrid products={activeProducts} />
+        <Suspense fallback={null}>
+          <ShopGrid products={activeProducts} />
+        </Suspense>
       </div>
     </Container>
   );

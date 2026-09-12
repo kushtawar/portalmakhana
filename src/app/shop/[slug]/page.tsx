@@ -57,7 +57,7 @@ export default async function ProductDetailPage({
                 ? "Pure Indian Spice"
                 : "Makhana"}
           </p>
-          <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-3xl">
+          <h1 className="mt-1 font-display text-2xl font-semibold text-primary-dark sm:text-3xl">
             {product.name}
           </h1>
           <p className="mt-2 text-foreground-muted">{product.shortDescription}</p>

@@ -34,7 +34,7 @@ export default function Footer() {
     <footer className="border-t border-border bg-ivory">
       <Container className="grid grid-cols-2 gap-8 py-12 sm:grid-cols-4">
         <div className="col-span-2 sm:col-span-1">
-          <p className="text-lg font-bold text-foreground">
+          <p className="font-display text-lg font-semibold text-foreground">
             Itar<span className="text-primary">Intakes</span>
           </p>
           <p className="mt-2 max-w-xs text-sm text-foreground-muted">

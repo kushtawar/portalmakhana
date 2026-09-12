@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# local Claude Code settings (personal permission overrides)
+.claude/settings.local.json
+
 # source requirements docs (not app code)
 ItarIntakes_Complete_Website_Requirements_for_Claude_Code.docx
 ItarIntakes_Admin_Portal_Requirements_for_Claude.docx

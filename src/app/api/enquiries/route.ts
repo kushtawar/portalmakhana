@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { createEnquiry, listEnquiries } from "@/lib/db/enquiries";
 import { createEnquirySchema } from "@/lib/validation/enquiry";
+import { notifyNewEnquiry } from "@/lib/mail/notifyEnquiry";
 
 // Public: visitors submit wholesale/export enquiries from the storefront.
 export async function POST(request: Request) {
@@ -12,6 +13,12 @@ export async function POST(request: Request) {
   }
 
   const enquiry = await createEnquiry(parsed.data);
+
+  // The enquiry is already saved; don't fail the request over a flaky mail server.
+  notifyNewEnquiry(enquiry).catch((error) => {
+    console.error("Failed to send enquiry notification email", error);
+  });
+
   return NextResponse.json({ enquiry }, { status: 201 });
 }
 

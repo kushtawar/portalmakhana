@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/connect";
 import { ArticleModel } from "@/lib/db/models/Article";
 import { listArticles } from "@/lib/db/articles";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { createArticleSchema } from "@/lib/validation/article";
 
 export async function GET(request: Request) {
@@ -39,6 +40,12 @@ export async function POST(request: Request) {
   }
 
   const created = await ArticleModel.create(parsed.data);
+  await recordAuditEvent({
+    entityType: "article",
+    entityLabel: parsed.data.title,
+    action: parsed.data.status === "published" ? "publish" : "create",
+    actor: session.user?.email ?? "admin",
+  });
   return NextResponse.json(
     { article: { id: String(created._id), ...parsed.data } },
     { status: 201 }

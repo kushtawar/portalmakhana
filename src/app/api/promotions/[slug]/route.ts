@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/connect";
 import { PromotionModel } from "@/lib/db/models/Promotion";
 import { getPromotionBySlug } from "@/lib/db/promotions";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { updatePromotionSchema } from "@/lib/validation/promotion";
 
 export async function GET(
@@ -42,6 +43,15 @@ export async function PATCH(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  const isOnlyActiveToggle =
+    Object.keys(parsed.data).length === 1 && parsed.data.active !== undefined;
+  await recordAuditEvent({
+    entityType: "promotion",
+    entityLabel: updated.title,
+    action: isOnlyActiveToggle ? (parsed.data.active ? "activate" : "deactivate") : "update",
+    actor: session.user?.email ?? "admin",
+  });
+
   return NextResponse.json({ promotion: updated });
 }
 
@@ -56,10 +66,18 @@ export async function DELETE(
 
   const { slug } = await params;
   await connectToDatabase();
+  const existing = await PromotionModel.findOne({ slug }).lean();
   const result = await PromotionModel.deleteOne({ slug });
   if (result.deletedCount === 0) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  await recordAuditEvent({
+    entityType: "promotion",
+    entityLabel: existing?.title ?? slug,
+    action: "delete",
+    actor: session.user?.email ?? "admin",
+  });
 
   return NextResponse.json({ ok: true });
 }

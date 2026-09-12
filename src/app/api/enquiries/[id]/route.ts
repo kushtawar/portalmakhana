@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/connect";
 import { EnquiryModel } from "@/lib/db/models/Enquiry";
 import { getEnquiryById } from "@/lib/db/enquiries";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { updateEnquirySchema } from "@/lib/validation/enquiry";
 
 export async function GET(
@@ -46,6 +47,13 @@ export async function PATCH(
   if (!updated) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  await recordAuditEvent({
+    entityType: "enquiry",
+    entityLabel: updated.fields[0]?.value ?? id,
+    action: "update",
+    actor: session.user?.email ?? "admin",
+  });
 
   return NextResponse.json({ enquiry: updated });
 }

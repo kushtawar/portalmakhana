@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/connect";
 import { PromotionModel } from "@/lib/db/models/Promotion";
 import { listPromotions } from "@/lib/db/promotions";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { createPromotionSchema } from "@/lib/validation/promotion";
 
 export async function GET() {
@@ -38,6 +39,12 @@ export async function POST(request: Request) {
   }
 
   const created = await PromotionModel.create(parsed.data);
+  await recordAuditEvent({
+    entityType: "promotion",
+    entityLabel: parsed.data.title,
+    action: "create",
+    actor: session.user?.email ?? "admin",
+  });
   return NextResponse.json(
     { promotion: { id: String(created._id), ...parsed.data } },
     { status: 201 }

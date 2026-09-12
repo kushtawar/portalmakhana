@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { BannerModel } from "@/lib/db/models/Banner";
 import { connectToDatabase } from "@/lib/db/connect";
 import { listBanners } from "@/lib/db/banners";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { createBannerSchema } from "@/lib/validation/banner";
 
 export async function GET() {
@@ -29,5 +30,11 @@ export async function POST(request: Request) {
 
   await connectToDatabase();
   const created = await BannerModel.create(parsed.data);
+  await recordAuditEvent({
+    entityType: "banner",
+    entityLabel: parsed.data.headline,
+    action: "create",
+    actor: session.user?.email ?? "admin",
+  });
   return NextResponse.json({ banner: { id: String(created._id), ...parsed.data } }, { status: 201 });
 }

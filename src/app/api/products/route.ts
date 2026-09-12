@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/connect";
 import { ProductModel } from "@/lib/db/models/Product";
 import { listProducts } from "@/lib/db/products";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { createProductSchema } from "@/lib/validation/product";
 
 export async function GET(request: Request) {
@@ -42,5 +43,11 @@ export async function POST(request: Request) {
   }
 
   const created = await ProductModel.create(parsed.data);
+  await recordAuditEvent({
+    entityType: "product",
+    entityLabel: parsed.data.name,
+    action: "create",
+    actor: session.user?.email ?? "admin",
+  });
   return NextResponse.json({ product: { id: String(created._id), ...parsed.data } }, { status: 201 });
 }

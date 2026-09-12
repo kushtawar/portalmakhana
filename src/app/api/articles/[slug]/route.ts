@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/connect";
 import { ArticleModel } from "@/lib/db/models/Article";
 import { getArticleBySlug } from "@/lib/db/articles";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { updateArticleSchema } from "@/lib/validation/article";
 
 export async function GET(
@@ -42,6 +43,19 @@ export async function PATCH(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  const isOnlyStatusChange =
+    Object.keys(parsed.data).length === 1 && parsed.data.status !== undefined;
+  await recordAuditEvent({
+    entityType: "article",
+    entityLabel: updated.title,
+    action: isOnlyStatusChange
+      ? parsed.data.status === "published"
+        ? "publish"
+        : "unpublish"
+      : "update",
+    actor: session.user?.email ?? "admin",
+  });
+
   return NextResponse.json({ article: updated });
 }
 
@@ -56,10 +70,18 @@ export async function DELETE(
 
   const { slug } = await params;
   await connectToDatabase();
+  const existing = await ArticleModel.findOne({ slug }).lean();
   const result = await ArticleModel.deleteOne({ slug });
   if (result.deletedCount === 0) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  await recordAuditEvent({
+    entityType: "article",
+    entityLabel: existing?.title ?? slug,
+    action: "delete",
+    actor: session.user?.email ?? "admin",
+  });
 
   return NextResponse.json({ ok: true });
 }

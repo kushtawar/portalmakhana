@@ -108,6 +108,25 @@ export interface Enquiry {
   createdAt: string;
 }
 
+export type AuditEntityType = "product" | "promotion" | "banner" | "article" | "enquiry";
+export type AuditAction =
+  | "create"
+  | "update"
+  | "delete"
+  | "activate"
+  | "deactivate"
+  | "publish"
+  | "unpublish";
+
+export interface AuditEvent {
+  id: string;
+  entityType: AuditEntityType;
+  entityLabel: string;
+  action: AuditAction;
+  actor: string;
+  createdAt: string;
+}
+
 export interface CartItem {
   productSlug: string;
   productName: string;

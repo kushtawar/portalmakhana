@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/connect";
 import { BannerModel } from "@/lib/db/models/Banner";
 import { getBannerById } from "@/lib/db/banners";
+import { recordAuditEvent } from "@/lib/db/audit";
 import { updateBannerSchema } from "@/lib/validation/banner";
 
 export async function GET(
@@ -47,6 +48,15 @@ export async function PATCH(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  const isOnlyActiveToggle =
+    Object.keys(parsed.data).length === 1 && parsed.data.active !== undefined;
+  await recordAuditEvent({
+    entityType: "banner",
+    entityLabel: updated.headline,
+    action: isOnlyActiveToggle ? (parsed.data.active ? "activate" : "deactivate") : "update",
+    actor: session.user?.email ?? "admin",
+  });
+
   return NextResponse.json({ banner: updated });
 }
 
@@ -61,10 +71,18 @@ export async function DELETE(
 
   const { id } = await params;
   await connectToDatabase();
+  const existing = await BannerModel.findById(id).lean();
   const result = await BannerModel.deleteOne({ _id: id });
   if (result.deletedCount === 0) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  await recordAuditEvent({
+    entityType: "banner",
+    entityLabel: existing?.headline ?? id,
+    action: "delete",
+    actor: session.user?.email ?? "admin",
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -15,21 +15,27 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
-    const result = await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      redirect: false,
-    });
 
-    setLoading(false);
+    try {
+      const result = await signIn("credentials", {
+        email: formData.get("email"),
+        password: formData.get("password"),
+        redirect: false,
+      });
 
-    if (result?.error) {
-      setError("Invalid email or password.");
-      return;
+      if (result?.error) {
+        setError("Invalid email or password.");
+        return;
+      }
+
+      router.push("/admin/products");
+      router.refresh();
+    } catch (err) {
+      console.error("Admin sign-in failed:", err);
+      setError("Something went wrong signing in. Check the browser console for details.");
+    } finally {
+      setLoading(false);
     }
-
-    router.push("/admin/products");
-    router.refresh();
   };
 
   return (

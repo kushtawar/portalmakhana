@@ -3,7 +3,13 @@ import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PromotionBanner from "@/components/layout/PromotionBanner";
 import { CartProvider } from "@/lib/cart/CartContext";
+
+// The site-wide promotion banner below needs to reflect admin changes
+// immediately, so the whole app renders dynamically rather than being
+// statically cached per-route.
+export const dynamic = "force-dynamic";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <CartProvider>
           <Header />
+          <PromotionBanner />
           <main className="flex-1">{children}</main>
           <Footer />
         </CartProvider>

@@ -40,8 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# source requirements doc (not app code)
+# source requirements docs (not app code)
 ItarIntakes_Complete_Website_Requirements_for_Claude_Code.docx
+ItarIntakes_Admin_Portal_Requirements_for_Claude.docx
 
 # raw/staging image uploads not referenced by the app (see public/products for the served assets)
 /public/images/

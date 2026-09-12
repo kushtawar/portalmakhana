@@ -55,6 +55,20 @@ export interface Article {
   featured?: boolean;
 }
 
+export interface Promotion {
+  id: string;
+  slug: string;
+  title: string;
+  bannerText: string;
+  description: string;
+  imagePath?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  startAt: string;
+  endAt: string;
+  active: boolean;
+}
+
 export interface CartItem {
   productSlug: string;
   productName: string;

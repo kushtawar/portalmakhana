@@ -7,10 +7,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-muted">
       <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
-        <Link href="/admin/products" className="font-display text-lg font-semibold text-foreground">
-          Itar<span className="text-primary">Intakes</span>{" "}
-          <span className="text-sm font-normal text-foreground-muted">Admin</span>
-        </Link>
+        <div className="flex items-center gap-6">
+          <Link href="/admin/products" className="font-display text-lg font-semibold text-foreground">
+            Itar<span className="text-primary">Intakes</span>{" "}
+            <span className="text-sm font-normal text-foreground-muted">Admin</span>
+          </Link>
+          {session ? (
+            <nav className="hidden items-center gap-4 text-sm font-medium text-foreground-muted sm:flex">
+              <Link href="/admin/products" className="hover:text-primary">
+                Products
+              </Link>
+              <Link href="/admin/promotions" className="hover:text-primary">
+                Promotions
+              </Link>
+            </nav>
+          ) : null}
+        </div>
 
         {session ? (
           <form

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 
@@ -34,9 +35,12 @@ export default function Footer() {
     <footer className="border-t border-border bg-ivory">
       <Container className="grid grid-cols-2 gap-8 py-12 sm:grid-cols-4">
         <div className="col-span-2 sm:col-span-1">
-          <p className="font-display text-lg font-semibold text-foreground">
-            Itar<span className="text-primary">Intakes</span>
-          </p>
+          <div className="flex items-center gap-2">
+            <Image src="/brand/logo-mark.png" alt="" width={32} height={32} className="h-8 w-8" />
+            <p className="font-display text-lg font-semibold text-foreground">
+              Itar<span className="text-primary">Intakes</span>
+            </p>
+          </div>
           <p className="mt-2 max-w-xs text-sm text-foreground-muted">
             Premium Makhana from Patna. 10+ years of sourcing and quality
             experience, delivered pan-India and beyond.
@@ -66,6 +70,17 @@ export default function Footer() {
         <Container className="flex flex-col gap-2 py-6 text-xs text-foreground-muted sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} ItarIntakes. All rights reserved.</p>
           <p>Prices are inclusive of applicable GST unless stated otherwise.</p>
+          <p>
+            Powered by{" "}
+            <a
+              href="https://innovatetoday.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground-muted hover:text-primary"
+            >
+              innovatetoday.net
+            </a>
+          </p>
         </Container>
       </div>
     </footer>

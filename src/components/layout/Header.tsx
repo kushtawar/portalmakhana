@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -47,13 +48,16 @@ export default function Header() {
 
       <div className="border-b border-border bg-background/95 backdrop-blur">
         <Container className="flex h-20 items-center justify-between gap-4">
-          <Link href="/" className="shrink-0">
-            <p className="font-display text-xl font-semibold text-foreground">
-              Itar<span className="text-primary">Intakes</span>
-            </p>
-            <p className="text-[10px] font-medium uppercase tracking-wider text-foreground-muted">
-              Pure Makhana. A Better You.
-            </p>
+          <Link href="/" className="flex shrink-0 items-center gap-2">
+            <Image src="/brand/logo-mark.png" alt="" width={36} height={36} className="h-9 w-9" />
+            <span>
+              <p className="font-display text-xl font-semibold text-foreground">
+                Itar<span className="text-primary">Intakes</span>
+              </p>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-foreground-muted">
+                Pure Makhana. A Better You.
+              </p>
+            </span>
           </Link>
 
           <nav className="hidden items-center gap-6 lg:flex">

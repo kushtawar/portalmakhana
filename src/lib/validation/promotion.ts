@@ -15,6 +15,7 @@ export const createPromotionSchema = z
     startAt: z.string().datetime().or(z.string().min(1)),
     endAt: z.string().datetime().or(z.string().min(1)),
     active: z.boolean().default(true),
+    blinkBanner: z.boolean().default(false),
   })
   .refine((data) => new Date(data.endAt).getTime() > new Date(data.startAt).getTime(), {
     message: "endAt must be after startAt",
@@ -36,6 +37,7 @@ export const updatePromotionSchema = z.object({
   startAt: z.string().min(1).optional(),
   endAt: z.string().min(1).optional(),
   active: z.boolean().optional(),
+  blinkBanner: z.boolean().optional(),
 });
 
 export type CreatePromotionInput = z.infer<typeof createPromotionSchema>;

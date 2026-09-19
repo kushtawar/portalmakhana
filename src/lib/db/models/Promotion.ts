@@ -11,6 +11,7 @@ export interface PromotionDoc {
   startAt: Date;
   endAt: Date;
   active: boolean;
+  blinkBanner: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -29,6 +30,7 @@ const PromotionSchema = new Schema<PromotionDoc>(
     startAt: { type: Date, required: true, index: true },
     endAt: { type: Date, required: true, index: true },
     active: { type: Boolean, default: true, index: true },
+    blinkBanner: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

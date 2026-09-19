@@ -38,6 +38,7 @@ export default function PromotionForm({ promotion }: { promotion?: Promotion }) 
     promotion ? toLocalInputValue(promotion.endAt) : nowLocalInputValue()
   );
   const [active, setActive] = useState(promotion?.active ?? true);
+  const [blinkBanner, setBlinkBanner] = useState(promotion?.blinkBanner ?? false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -63,6 +64,7 @@ export default function PromotionForm({ promotion }: { promotion?: Promotion }) 
       startAt: new Date(startAt).toISOString(),
       endAt: new Date(endAt).toISOString(),
       active,
+      blinkBanner,
     };
 
     const url = isEdit ? `/api/promotions/${promotion!.slug}` : "/api/promotions";
@@ -120,6 +122,14 @@ export default function PromotionForm({ promotion }: { promotion?: Promotion }) 
         <label className="flex items-center gap-2 self-end pb-2 text-sm text-foreground-muted">
           <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
           Active (can be paused early without deleting)
+        </label>
+        <label className="flex items-center gap-2 self-end pb-2 text-sm text-foreground-muted">
+          <input
+            type="checkbox"
+            checked={blinkBanner}
+            onChange={(e) => setBlinkBanner(e.target.checked)}
+          />
+          Blink the site-wide banner (use sparingly)
         </label>
         <label className="text-sm text-foreground-muted sm:col-span-2">
           Banner text (shown site-wide while live)

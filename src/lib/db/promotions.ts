@@ -16,6 +16,7 @@ function toPromotion(doc: PromotionDoc & { _id: unknown }): Promotion {
     startAt: doc.startAt.toISOString(),
     endAt: doc.endAt.toISOString(),
     active: doc.active,
+    blinkBanner: doc.blinkBanner,
   };
 }
 

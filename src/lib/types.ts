@@ -74,6 +74,7 @@ export interface Promotion {
   startAt: string;
   endAt: string;
   active: boolean;
+  blinkBanner: boolean;
 }
 
 export type BannerPlacement = "home-hero";

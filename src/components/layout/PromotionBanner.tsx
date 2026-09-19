@@ -9,7 +9,9 @@ export default async function PromotionBanner() {
   return (
     <Link
       href={`/offers/${promotion.slug}`}
-      className="promo-banner relative block bg-gradient-to-r from-accent to-primary-deep text-white transition-opacity hover:opacity-95"
+      className={`relative block bg-gradient-to-r from-accent to-primary-deep text-white transition-opacity hover:opacity-95 ${
+        promotion.blinkBanner ? "promo-banner" : ""
+      }`}
     >
       <Container className="relative flex items-center justify-center gap-2 py-2 text-center text-sm font-medium">
         <span aria-hidden>🎉</span>

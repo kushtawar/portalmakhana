@@ -47,18 +47,18 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-@keyframes promo-glow {
+@keyframes promo-blink {
   0%,
   100% {
-    box-shadow: 0 0 0 rgba(193, 127, 23, 0);
+    opacity: 1;
   }
   50% {
-    box-shadow: 0 0 10px rgba(193, 127, 23, 0.35);
+    opacity: 0.55;
   }
 }
 
 .promo-banner {
-  animation: promo-glow 4s ease-in-out infinite;
+  animation: promo-blink 1.1s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

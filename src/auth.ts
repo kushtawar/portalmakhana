@@ -16,7 +16,11 @@ class BadEmailSignin extends CredentialsSignin {
   code = "bad-email";
 }
 class BadPasswordSignin extends CredentialsSignin {
-  code = "bad-password";
+  constructor(hashLength: number) {
+    super();
+    this.code = `bad-password-hashlen-${hashLength}`;
+  }
+  code: string;
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -49,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const valid = await bcrypt.compare(password, adminPasswordHash);
         if (!valid) {
-          throw new BadPasswordSignin();
+          throw new BadPasswordSignin(adminPasswordHash.length);
         }
 
         return { id: "admin", email: adminEmail, name: "Admin" };

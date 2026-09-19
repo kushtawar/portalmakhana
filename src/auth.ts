@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   pages: { signIn: "/admin/login" },
+  trustHost: true,
   providers: [
     Credentials({
       name: "Admin credentials",

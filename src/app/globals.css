@@ -46,3 +46,38 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+@keyframes promo-shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes promo-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(193, 127, 23, 0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(193, 127, 23, 0.55);
+  }
+}
+
+.promo-banner {
+  animation: promo-glow 2.4s ease-in-out infinite;
+}
+
+.promo-shimmer {
+  animation: promo-shimmer 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-banner,
+  .promo-shimmer,
+  .promo-banner .animate-bounce {
+    animation: none;
+  }
+}

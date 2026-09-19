@@ -1,6 +1,23 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+
+// TEMP: distinct codes to diagnose a reported login failure without
+// logging any secret values. Auth.js surfaces `.code` to the client via
+// signIn()'s returned `code` field. Collapse back to a single `return null`
+// once resolved - see AGENTS/PR notes.
+class BadInputSignin extends CredentialsSignin {
+  code = "bad-input";
+}
+class MissingEnvSignin extends CredentialsSignin {
+  code = "missing-env";
+}
+class BadEmailSignin extends CredentialsSignin {
+  code = "bad-email";
+}
+class BadPasswordSignin extends CredentialsSignin {
+  code = "bad-password";
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -16,16 +33,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       authorize: async (credentials) => {
         const email = credentials?.email;
         const password = credentials?.password;
-        if (typeof email !== "string" || typeof password !== "string") return null;
+        if (typeof email !== "string" || typeof password !== "string") {
+          throw new BadInputSignin();
+        }
 
         const adminEmail = process.env.ADMIN_EMAIL;
         const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
-        if (!adminEmail || !adminPasswordHash) return null;
+        if (!adminEmail || !adminPasswordHash) {
+          throw new MissingEnvSignin();
+        }
 
-        if (email !== adminEmail) return null;
+        if (email !== adminEmail) {
+          throw new BadEmailSignin();
+        }
 
         const valid = await bcrypt.compare(password, adminPasswordHash);
-        if (!valid) return null;
+        if (!valid) {
+          throw new BadPasswordSignin();
+        }
 
         return { id: "admin", email: adminEmail, name: "Admin" };
       },

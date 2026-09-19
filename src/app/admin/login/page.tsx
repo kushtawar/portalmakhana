@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       if (result?.error) {
         // TEMP: showing the raw NextAuth error code to debug a login issue.
         // Revert to a generic "Invalid email or password." once resolved.
-        setError(`Sign-in failed (${result.error}). Check email/password and try again.`);
+        setError(`Sign-in failed: ${result.error} / ${result.code ?? "no-code"}`);
         return;
       }
 

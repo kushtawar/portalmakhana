@@ -47,10 +47,11 @@ async function parseDocx(buffer: Buffer): Promise<ParsedDocument> {
 }
 
 async function parsePdf(buffer: Buffer): Promise<ParsedDocument> {
-  const { PDFParse } = await import("pdf-parse");
-  const parser = new PDFParse({ data: new Uint8Array(buffer) });
-  const { text } = await parser.getText();
-  await parser.destroy();
+  // Import the internal module directly, not the package root: index.js runs a
+  // self-test on load (reads a sample PDF from disk) whenever it detects no
+  // CommonJS parent module, which is always true for a dynamic import() in ESM.
+  const pdfParse = (await import("pdf-parse/lib/pdf-parse.js")).default;
+  const { text } = await pdfParse(buffer);
 
   const paragraphs = text
     .split(/\n\s*\n/)

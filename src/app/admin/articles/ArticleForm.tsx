@@ -18,6 +18,14 @@ function toDateInputValue(iso: string): string {
   return iso.slice(0, 10);
 }
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
 export default function ArticleForm({ article }: { article?: Article }) {
   const router = useRouter();
   const isEdit = Boolean(article);
@@ -42,6 +50,8 @@ export default function ArticleForm({ article }: { article?: Article }) {
   const [seoDescription, setSeoDescription] = useState(article?.seoDescription ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [parsingDoc, setParsingDoc] = useState(false);
+  const [parseError, setParseError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -116,8 +126,58 @@ export default function ArticleForm({ article }: { article?: Article }) {
     }
   };
 
+  const handleDocumentUpload = async (file: File) => {
+    setParseError(null);
+    setParsingDoc(true);
+
+    const body = new FormData();
+    body.append("file", file);
+
+    try {
+      const res = await fetch("/api/articles/parse-document", { method: "POST", body });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not read this document");
+
+      setTitle(data.title);
+      if (!slug) setSlug(slugify(data.title));
+      setExcerpt(data.excerpt);
+      setContent(data.content.join("\n\n"));
+      if (data.coverImageUrl) setImagePath(data.coverImageUrl);
+    } catch (err) {
+      setParseError(err instanceof Error ? err.message : "Could not read this document");
+    } finally {
+      setParsingDoc(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="rounded-xl border border-dashed border-primary/40 bg-primary-light/40 p-6">
+        <p className="text-sm font-semibold text-foreground">
+          Start from a Word or PDF document (optional)
+        </p>
+        <p className="mt-1 text-xs text-foreground-muted">
+          Upload a .docx or .pdf and the fields below will be filled in automatically from it —
+          review and edit everything before saving. Works best with a clear first line/heading as
+          the title and normal paragraphs; a Word document&apos;s first image is used as the cover
+          photo.
+        </p>
+        <input
+          type="file"
+          accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,application/pdf"
+          disabled={parsingDoc}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) void handleDocumentUpload(file);
+          }}
+          className="mt-3 text-sm text-foreground-muted"
+        />
+        {parsingDoc ? (
+          <p className="mt-2 text-xs text-foreground-muted">Reading document...</p>
+        ) : null}
+        {parseError ? <p className="mt-2 text-xs text-danger">{parseError}</p> : null}
+      </div>
+
       <div className="grid gap-4 rounded-xl border border-border bg-card p-6 sm:grid-cols-2">
         <label className="text-sm text-foreground-muted sm:col-span-2">
           Title

@@ -26,15 +26,16 @@ export function publicMediaUrl(key: string): string {
   return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 }
 
-export async function uploadPublicMedia(
+async function putMedia(
   folder: string,
-  file: File
+  buffer: Buffer,
+  contentType: string
 ): Promise<{ url: string; key: string }> {
-  const extension = ALLOWED_TYPES[file.type];
+  const extension = ALLOWED_TYPES[contentType];
   if (!extension) {
     throw new Error("Unsupported file type. Use JPEG, PNG or WebP.");
   }
-  if (file.size > MAX_UPLOAD_BYTES) {
+  if (buffer.byteLength > MAX_UPLOAD_BYTES) {
     throw new Error("File is too large (max 5MB).");
   }
 
@@ -42,18 +43,28 @@ export async function uploadPublicMedia(
   if (!bucket) throw new Error("S3_BUCKET_NAME is not configured");
 
   const key = `media/${folder}/${randomUUID()}.${extension}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
 
   await getClient().send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: buffer,
-      ContentType: file.type,
-    })
+    new PutObjectCommand({ Bucket: bucket, Key: key, Body: buffer, ContentType: contentType })
   );
 
   return { url: publicMediaUrl(key), key };
+}
+
+export async function uploadPublicMedia(
+  folder: string,
+  file: File
+): Promise<{ url: string; key: string }> {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  return putMedia(folder, buffer, file.type);
+}
+
+export async function uploadPublicMediaBuffer(
+  folder: string,
+  buffer: Buffer,
+  contentType: string
+): Promise<{ url: string; key: string }> {
+  return putMedia(folder, buffer, contentType);
 }
 
 export async function deletePublicMedia(key: string): Promise<void> {

@@ -55,7 +55,7 @@ export default async function OfferPage({
       </h1>
       <p className="mt-3 text-foreground-muted">{promotion.bannerText}</p>
 
-      <div className="mt-8 whitespace-pre-line text-left text-sm leading-relaxed text-foreground-muted">
+      <div className="mt-8 whitespace-pre-line text-center text-sm leading-relaxed text-foreground-muted">
         {promotion.description}
       </div>
 

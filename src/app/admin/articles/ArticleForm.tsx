@@ -170,7 +170,7 @@ export default function ArticleForm({ article }: { article?: Article }) {
             const file = e.target.files?.[0];
             if (file) void handleDocumentUpload(file);
           }}
-          className="mt-3 text-sm text-foreground-muted"
+          className="mt-3 block w-full cursor-pointer text-sm text-foreground-muted file:mr-4 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
         />
         {parsingDoc ? (
           <p className="mt-2 text-xs text-foreground-muted">Reading document...</p>
@@ -236,35 +236,41 @@ export default function ArticleForm({ article }: { article?: Article }) {
         </label>
         <label className="text-sm text-foreground-muted sm:col-span-2">
           Cover image
-          <div className="mt-1 flex items-center gap-4">
-            {imagePath ? (
-              <div className="relative h-16 w-24 overflow-hidden rounded-lg border border-border">
+          <div className="mt-1 flex flex-col gap-4 rounded-xl border border-dashed border-border bg-muted/40 p-4 sm:flex-row sm:items-center">
+            <div className="relative h-24 w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-card">
+              {imagePath ? (
                 <Image src={imagePath} alt="Cover preview" fill className="object-cover" />
-              </div>
-            ) : null}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              disabled={uploading}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void handleImageUpload(file);
-              }}
-              className="text-sm text-foreground-muted"
-            />
-            {uploading ? <span className="text-xs text-foreground-muted">Uploading...</span> : null}
-            {imagePath ? (
-              <button
-                type="button"
-                onClick={() => setImagePath("")}
-                className="text-xs text-danger underline"
-              >
-                Remove
-              </button>
-            ) : null}
+              ) : (
+                <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs text-foreground-muted">
+                  No image yet
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void handleImageUpload(file);
+                }}
+                className="block w-full cursor-pointer text-sm text-foreground-muted file:mr-4 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              <p className="mt-2 text-xs text-foreground-muted">JPEG, PNG or WebP, up to 5MB.</p>
+              {uploading ? <p className="mt-1 text-xs text-primary">Uploading...</p> : null}
+              {uploadError ? <p className="mt-1 text-xs text-danger">{uploadError}</p> : null}
+              {imagePath ? (
+                <button
+                  type="button"
+                  onClick={() => setImagePath("")}
+                  className="mt-1 text-xs font-medium text-danger underline"
+                >
+                  Remove image
+                </button>
+              ) : null}
+            </div>
           </div>
-          {uploadError ? <p className="mt-1 text-xs text-danger">{uploadError}</p> : null}
-          <span className="mt-1 block text-xs text-foreground-muted">JPEG, PNG or WebP, up to 5MB.</span>
         </label>
         <label className="text-sm text-foreground-muted">
           Cover image alt text (used as label when no image is uploaded)

@@ -37,6 +37,9 @@ export default async function ArticleDetailPage({
     if (!session) notFound();
   }
 
+  const wordCount = article.content.join(" ").split(/\s+/).filter(Boolean).length;
+  const readMinutes = Math.max(1, Math.round(wordCount / 200));
+
   return (
     <Container className="max-w-3xl py-12">
       {!isPublished ? (
@@ -46,16 +49,19 @@ export default async function ArticleDetailPage({
         </div>
       ) : null}
       <Badge variant="muted">{article.category}</Badge>
-      <h1 className="mt-3 font-display text-2xl font-semibold text-primary-dark sm:text-3xl">
+      <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-primary-dark sm:text-4xl">
         {article.title}
       </h1>
-      <p className="mt-2 text-sm text-foreground-muted">
+      <p className="mt-4 font-display text-lg leading-relaxed text-foreground-muted sm:text-xl">
+        {article.excerpt}
+      </p>
+      <p className="mt-4 text-sm text-foreground-muted">
         {new Date(article.publishDate).toLocaleDateString("en-IN", {
           year: "numeric",
           month: "long",
           day: "numeric",
         })}{" "}
-        &middot; {article.author}
+        &middot; {article.author} &middot; {readMinutes} min read
       </p>
 
       <ArticleCoverImage
@@ -63,10 +69,10 @@ export default async function ArticleDetailPage({
         label={article.coverImageLabel}
         priority
         sizes="(min-width: 1024px) 768px, 100vw"
-        className="mt-6 aspect-[16/9] w-full rounded-2xl"
+        className="mt-8 aspect-[16/9] w-full rounded-2xl"
       />
 
-      <div className="mt-8 space-y-4 text-sm leading-relaxed text-foreground-muted">
+      <div className="article-body mt-10 space-y-5 text-base leading-relaxed text-foreground sm:text-lg">
         {article.content.map((paragraph, index) => (
           <p key={index}>{paragraph}</p>
         ))}

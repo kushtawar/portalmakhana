@@ -66,3 +66,13 @@ body {
     animation: none;
   }
 }
+
+.article-body p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-size: 3.5em;
+  line-height: 0.85;
+  font-weight: 600;
+  padding-right: 0.08em;
+  color: var(--color-primary-dark);
+}

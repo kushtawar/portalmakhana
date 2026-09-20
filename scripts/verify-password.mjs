@@ -14,5 +14,8 @@ if (!match) {
   process.exit(1);
 }
 
-const hash = match[1].trim();
+// .env.local stores the $-escaped form (see hash-password.mjs) - Next.js's
+// own env loader un-escapes it back to a real bcrypt hash before the app
+// ever sees it, so mirror that here rather than comparing the raw file value.
+const hash = match[1].trim().replace(/\\\$/g, "$");
 console.log("Hash in .env.local matches this password:", bcrypt.compareSync(password, hash));

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Container from "@/components/layout/Container";
-import ProductImagePlaceholder from "@/components/product/ProductImagePlaceholder";
+import ArticleCoverImage from "@/components/stories/ArticleCoverImage";
 import Badge from "@/components/ui/Badge";
 import { getArticleBySlug } from "@/lib/db/articles";
 
@@ -45,8 +45,11 @@ export default async function ArticleDetailPage({
         &middot; {article.author}
       </p>
 
-      <ProductImagePlaceholder
+      <ArticleCoverImage
+        imagePath={article.imagePath}
         label={article.coverImageLabel}
+        priority
+        sizes="(min-width: 1024px) 768px, 100vw"
         className="mt-6 aspect-[16/9] w-full rounded-2xl"
       />
 

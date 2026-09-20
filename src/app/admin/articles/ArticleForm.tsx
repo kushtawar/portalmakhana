@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Article, ArticleCategory, ArticleStatus } from "@/lib/types";
@@ -26,6 +27,9 @@ export default function ArticleForm({ article }: { article?: Article }) {
   const [excerpt, setExcerpt] = useState(article?.excerpt ?? "");
   const [content, setContent] = useState(article?.content.join("\n\n") ?? "");
   const [coverImageLabel, setCoverImageLabel] = useState(article?.coverImageLabel ?? "");
+  const [imagePath, setImagePath] = useState(article?.imagePath ?? "");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [author, setAuthor] = useState(article?.author ?? "ItarIntakes Team");
   const [category, setCategory] = useState<ArticleCategory>(article?.category ?? "Stories");
   const [tags, setTags] = useState(article?.tags.join(", ") ?? "");
@@ -53,6 +57,7 @@ export default function ArticleForm({ article }: { article?: Article }) {
         .map((p) => p.trim())
         .filter(Boolean),
       coverImageLabel: coverImageLabel || title,
+      imagePath: imagePath || undefined,
       author,
       category,
       tags: tags
@@ -89,6 +94,26 @@ export default function ArticleForm({ article }: { article?: Article }) {
 
     router.push("/admin/articles");
     router.refresh();
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setUploadError(null);
+    setUploading(true);
+
+    const body = new FormData();
+    body.append("file", file);
+    body.append("folder", "articles");
+
+    try {
+      const res = await fetch("/api/media/upload", { method: "POST", body });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setImagePath(data.url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -149,8 +174,40 @@ export default function ArticleForm({ article }: { article?: Article }) {
             className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </label>
+        <label className="text-sm text-foreground-muted sm:col-span-2">
+          Cover image
+          <div className="mt-1 flex items-center gap-4">
+            {imagePath ? (
+              <div className="relative h-16 w-24 overflow-hidden rounded-lg border border-border">
+                <Image src={imagePath} alt="Cover preview" fill className="object-cover" />
+              </div>
+            ) : null}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void handleImageUpload(file);
+              }}
+              className="text-sm text-foreground-muted"
+            />
+            {uploading ? <span className="text-xs text-foreground-muted">Uploading...</span> : null}
+            {imagePath ? (
+              <button
+                type="button"
+                onClick={() => setImagePath("")}
+                className="text-xs text-danger underline"
+              >
+                Remove
+              </button>
+            ) : null}
+          </div>
+          {uploadError ? <p className="mt-1 text-xs text-danger">{uploadError}</p> : null}
+          <span className="mt-1 block text-xs text-foreground-muted">JPEG, PNG or WebP, up to 5MB.</span>
+        </label>
         <label className="text-sm text-foreground-muted">
-          Cover image label (placeholder text until real photography)
+          Cover image alt text (used as label when no image is uploaded)
           <input
             value={coverImageLabel}
             onChange={(e) => setCoverImageLabel(e.target.value)}

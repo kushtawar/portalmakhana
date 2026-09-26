@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Banner } from "@/lib/types";
@@ -15,8 +16,30 @@ export default function BannerForm({ banner }: { banner?: Banner }) {
   const [ctaHref, setCtaHref] = useState(banner?.ctaHref ?? "/shop");
   const [imagePath, setImagePath] = useState(banner?.imagePath ?? "");
   const [active, setActive] = useState(banner?.active ?? true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const handleImageUpload = async (file: File) => {
+    setUploadError(null);
+    setUploading(true);
+
+    const body = new FormData();
+    body.append("file", file);
+    body.append("folder", "banners");
+
+    try {
+      const res = await fetch("/api/media/upload", { method: "POST", body });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setImagePath(data.url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,7 +53,8 @@ export default function BannerForm({ banner }: { banner?: Banner }) {
       subtext,
       ctaLabel: ctaLabel || undefined,
       ctaHref: ctaHref || undefined,
-      imagePath: imagePath || undefined,
+      // Sent as "" (not undefined) on removal so the PATCH actually clears it.
+      imagePath,
       active,
     };
 
@@ -111,14 +135,44 @@ export default function BannerForm({ banner }: { banner?: Banner }) {
           />
         </label>
         <label className="text-sm text-foreground-muted sm:col-span-2">
-          Image path (from Media Library once available; for now, a path under /public, e.g.
-          /products/classic-roasted-makhana.jpg)
-          <input
-            value={imagePath}
-            onChange={(e) => setImagePath(e.target.value)}
-            placeholder="/products/classic-roasted-makhana.jpg"
-            className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
+          Hero image
+          <div className="mt-1 flex flex-col gap-4 rounded-xl border border-dashed border-border bg-muted/40 p-4 sm:flex-row sm:items-center">
+            <div className="relative h-28 w-40 shrink-0 overflow-hidden rounded-lg border border-border bg-card">
+              {imagePath ? (
+                <Image src={imagePath} alt="Hero preview" fill className="object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs text-foreground-muted">
+                  Default image
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void handleImageUpload(file);
+                }}
+                className="block w-full cursor-pointer text-sm text-foreground-muted file:mr-4 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              <p className="mt-2 text-xs text-foreground-muted">
+                JPEG, PNG or WebP, up to 5MB. A landscape image around 1200×900 works best.
+              </p>
+              {uploading ? <p className="mt-1 text-xs text-primary">Uploading...</p> : null}
+              {uploadError ? <p className="mt-1 text-xs text-danger">{uploadError}</p> : null}
+              {imagePath ? (
+                <button
+                  type="button"
+                  onClick={() => setImagePath("")}
+                  className="mt-1 text-xs font-medium text-danger underline"
+                >
+                  Remove image (use default)
+                </button>
+              ) : null}
+            </div>
+          </div>
         </label>
         <label className="flex items-center gap-2 text-sm text-foreground-muted">
           <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
@@ -130,7 +184,7 @@ export default function BannerForm({ banner }: { banner?: Banner }) {
 
       <button
         type="submit"
-        disabled={saving}
+        disabled={saving || uploading}
         className="rounded-full bg-gradient-to-r from-primary to-primary-deep px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {saving ? "Saving..." : isEdit ? "Save changes" : "Create banner"}

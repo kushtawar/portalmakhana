@@ -3,18 +3,19 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { HERO_DEFAULTS } from "@/lib/data/heroDefaults";
 import type { Banner } from "@/lib/types";
 
 export default function BannerForm({ banner }: { banner?: Banner }) {
   const router = useRouter();
   const isEdit = Boolean(banner);
 
-  const [eyebrow, setEyebrow] = useState(banner?.eyebrow ?? "");
-  const [headline, setHeadline] = useState(banner?.headline ?? "");
-  const [subtext, setSubtext] = useState(banner?.subtext ?? "");
-  const [ctaLabel, setCtaLabel] = useState(banner?.ctaLabel ?? "Shop Now");
-  const [ctaHref, setCtaHref] = useState(banner?.ctaHref ?? "/shop");
-  const [imagePath, setImagePath] = useState(banner?.imagePath ?? "");
+  const [eyebrow, setEyebrow] = useState(banner?.eyebrow ?? HERO_DEFAULTS.eyebrow);
+  const [headline, setHeadline] = useState(banner?.headline ?? HERO_DEFAULTS.headline);
+  const [subtext, setSubtext] = useState(banner?.subtext ?? HERO_DEFAULTS.subtext);
+  const [ctaLabel, setCtaLabel] = useState(banner?.ctaLabel ?? HERO_DEFAULTS.ctaLabel);
+  const [ctaHref, setCtaHref] = useState(banner?.ctaHref ?? HERO_DEFAULTS.ctaHref);
+  const [imagePath, setImagePath] = useState(banner?.imagePath ?? HERO_DEFAULTS.imagePath);
   const [active, setActive] = useState(banner?.active ?? true);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);

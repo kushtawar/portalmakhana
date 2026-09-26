@@ -62,7 +62,7 @@ export default async function AdminBannersPage() {
         </table>
         {banners.length === 0 ? (
           <p className="p-6 text-sm text-foreground-muted">
-            No banners yet — the homepage hero currently shows its built-in default content.
+            No banners yet — the homepage hero currently shows its built-in default content. Click &ldquo;New banner&rdquo; to change the hero image or text; the form starts pre-filled with what is live now.
           </p>
         ) : null}
       </div>

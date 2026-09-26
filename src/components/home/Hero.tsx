@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 import ProductImage from "@/components/product/ProductImage";
+import { HERO_DEFAULTS } from "@/lib/data/heroDefaults";
 import { getActiveBanner } from "@/lib/db/banners";
 
 const STATS = [
@@ -53,14 +54,12 @@ function BadgeIcon({ icon }: { icon: "leaf" | "heart" | "globe" }) {
 export default async function Hero() {
   const banner = await getActiveBanner("home-hero");
 
-  const eyebrow = banner?.eyebrow || "Natural · Nutritious · From Patna";
-  const headline = banner?.headline || "Premium Makhana from Patna";
-  const subtext =
-    banner?.subtext ||
-    "Pure. Crunchy. Wholesome. Sourced from the fertile lands of Patna, our Makhana brings you the goodness of nature with 10+ years of trusted experience — supplying across India and to global markets.";
-  const ctaLabel = banner?.ctaLabel || "Shop Now";
-  const ctaHref = banner?.ctaHref || "/shop";
-  const imagePath = banner?.imagePath || "/products/classic-roasted-makhana.jpg";
+  const eyebrow = banner?.eyebrow || HERO_DEFAULTS.eyebrow;
+  const headline = banner?.headline || HERO_DEFAULTS.headline;
+  const subtext = banner?.subtext || HERO_DEFAULTS.subtext;
+  const ctaLabel = banner?.ctaLabel || HERO_DEFAULTS.ctaLabel;
+  const ctaHref = banner?.ctaHref || HERO_DEFAULTS.ctaHref;
+  const imagePath = banner?.imagePath || HERO_DEFAULTS.imagePath;
 
   return (
     <section className="bg-gradient-to-b from-background-subtle to-background">

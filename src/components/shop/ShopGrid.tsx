@@ -6,6 +6,7 @@ import type { Product, ProductCategory } from "@/lib/types";
 import ProductCard from "@/components/product/ProductCard";
 
 const CATEGORY_LABELS: Record<ProductCategory, string> = {
+  makhana: "Makhana",
   roasted: "Roasted",
   flavoured: "Flavoured",
   raw: "Raw",

@@ -8,6 +8,7 @@ export default function ProductImage({
   className = "",
   sizes,
   priority,
+  fit = "cover",
 }: {
   imagePath?: string;
   label: string;
@@ -15,20 +16,22 @@ export default function ProductImage({
   className?: string;
   sizes?: string;
   priority?: boolean;
+  /** "contain" shows the whole image (letterboxed on black) instead of cropping it. */
+  fit?: "cover" | "contain";
 }) {
   if (!imagePath) {
     return <PacketArt packType={packType} label={label} className={className} />;
   }
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div className={`relative overflow-hidden ${fit === "contain" ? "bg-black" : ""} ${className}`}>
       <Image
         src={imagePath}
         alt={`${label} packaging`}
         fill
         priority={priority}
         sizes={sizes ?? "(min-width: 1024px) 25vw, 50vw"}
-        className="object-cover"
+        className={fit === "contain" ? "object-contain" : "object-cover"}
       />
     </div>
   );

@@ -42,8 +42,8 @@ export default function Footer() {
             </p>
           </div>
           <p className="mt-2 max-w-xs text-sm text-foreground-muted">
-            Premium Makhana from Patna. 10+ years of sourcing and quality
-            experience, delivered pan-India and beyond.
+            Home of Shrestha — Healthy Food, Healthy Life. Carefully
+            selected, hygienically packed Makhana and spices from Patna.
           </p>
         </div>
 

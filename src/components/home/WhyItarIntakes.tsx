@@ -3,19 +3,19 @@ import SectionHeading from "@/components/ui/SectionHeading";
 
 const REASONS = [
   {
-    title: "Decade-long grading experience",
+    title: "Quality selection",
     detail:
-      "We've been sourcing and grading Makhana from Patna for 10+ years, long before we opened this online store.",
+      "Silver, Gold and Diamond Makhana — each grade carefully selected, so you know exactly what you're buying.",
   },
   {
-    title: "Quality first",
+    title: "Handpicked option",
     detail:
-      "Every batch is checked for grade, size and freshness before it's roasted, packed or shipped.",
+      "Besides regular machine-prepared packs, Gold and Diamond come in a Handpicked option — manually filtered and selected before packing.",
   },
   {
-    title: "Built for every buyer",
+    title: "Hygienic packaging",
     detail:
-      "From a single retail pack to recurring wholesale and export supply, our process scales without cutting corners.",
+      "Consistency and customer trust come first: every Shrestha product is hygienically packed for everyday use.",
   },
 ];
 
@@ -23,7 +23,7 @@ export default function WhyItarIntakes() {
   return (
     <section className="bg-background-subtle py-14">
       <Container>
-        <SectionHeading eyebrow="Why ItarIntakes" title="Trusted Makhana, at every scale" />
+        <SectionHeading eyebrow="Why Shrestha" title="Quality, careful selection and hygienic packaging" />
         <div className="mt-8 grid gap-6 sm:grid-cols-3">
           {REASONS.map((reason) => (
             <div key={reason.title} className="rounded-xl border border-border bg-card p-6">

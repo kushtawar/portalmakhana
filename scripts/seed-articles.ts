@@ -10,9 +10,15 @@ async function seed() {
   }
 
   await mongoose.connect(uri);
-  console.log(`Connected. Seeding ${articles.length} articles...`);
+  // Optional slug arguments limit the seed to those articles, so existing
+  // articles an admin has edited are not overwritten.
+  const onlySlugs = process.argv.slice(2);
+  const toSeed = onlySlugs.length
+    ? articles.filter((article) => onlySlugs.includes(article.slug))
+    : articles;
+  console.log(`Connected. Seeding ${toSeed.length} articles...`);
 
-  for (const article of articles) {
+  for (const article of toSeed) {
     const { id: _id, publishDate, ...rest } = article;
     void _id;
     await ArticleModel.findOneAndUpdate(

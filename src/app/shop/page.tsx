@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Shop",
-  description: "Browse premium roasted, flavoured and raw Makhana from ItarIntakes.",
+  description: "Shop Shrestha Makhana (Silver, Gold, Diamond, Handpicked) and spices from ItarIntakes.",
 };
 
 export default async function ShopPage() {
@@ -19,7 +19,7 @@ export default async function ShopPage() {
     <Container className="py-12">
       <SectionHeading
         eyebrow="Shop"
-        title="All Makhana products"
+        title="All products"
         description="Weight and pack options are shown on each product. Prices include applicable GST unless noted."
       />
       <div className="mt-8">

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Product, ProductAttribute, ProductVariant } from "@/lib/types";
 
-const CATEGORIES = ["roasted", "flavoured", "raw", "gift-pack", "spice"] as const;
+const CATEGORIES = ["makhana", "roasted", "flavoured", "raw", "gift-pack", "spice"] as const;
 
 type FormVariant = ProductVariant;
 type FormAttribute = ProductAttribute;
@@ -26,7 +26,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [slug, setSlug] = useState(product?.slug ?? "");
   const [shortDescription, setShortDescription] = useState(product?.shortDescription ?? "");
   const [longDescription, setLongDescription] = useState(product?.longDescription ?? "");
-  const [category, setCategory] = useState<Product["category"]>(product?.category ?? "roasted");
+  const [category, setCategory] = useState<Product["category"]>(product?.category ?? "makhana");
   const [grade, setGrade] = useState(product?.grade ?? "");
   const [flavour, setFlavour] = useState(product?.flavour ?? "");
   const [gstRate, setGstRate] = useState(product?.gstRate ?? 5);

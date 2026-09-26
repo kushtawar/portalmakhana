@@ -23,6 +23,14 @@ async function seed() {
     console.log(`  upserted: ${product.slug}`);
   }
 
+  // Hide (not delete) anything that isn't in the catalogue, so old sample
+  // products disappear from the shop but stay recoverable in the admin.
+  const hidden = await ProductModel.updateMany(
+    { slug: { $nin: products.map((p) => p.slug) }, active: true },
+    { $set: { active: false, featured: false, bestseller: false } }
+  );
+  console.log(`  hid ${hidden.modifiedCount} product(s) not in the catalogue`);
+
   const count = await ProductModel.countDocuments();
   console.log(`Done. ${count} products now in the collection.`);
 

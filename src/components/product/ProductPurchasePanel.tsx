@@ -94,7 +94,7 @@ export default function ProductPurchasePanel({ product }: { product: Product }) 
       </div>
 
       <p className={`mt-3 text-xs font-medium ${inStock ? "text-primary-dark" : "text-danger"}`}>
-        {inStock ? `${variant.stock} in stock` : "Out of stock"}
+        {inStock ? "In stock" : "Out of stock"}
       </p>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">

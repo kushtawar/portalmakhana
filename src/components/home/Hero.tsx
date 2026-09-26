@@ -5,16 +5,16 @@ import { HERO_DEFAULTS } from "@/lib/data/heroDefaults";
 import { getActiveBanner } from "@/lib/db/banners";
 
 const STATS = [
-  { value: "10+", label: "Years of Experience" },
-  { value: "Pan India", label: "Supply" },
-  { value: "Global", label: "Exports" },
-  { value: "Thousands", label: "Happy Customers" },
+  { value: "3 Grades", label: "Silver · Gold · Diamond" },
+  { value: "Handpicked", label: "Gold & Diamond option" },
+  { value: "250 g", label: "Makhana packs" },
+  { value: "Hygienic", label: "Packaging" },
 ];
 
 const BADGES = [
-  { label: "A Healthier You", icon: "leaf" as const },
-  { label: "Rooted in Patna", icon: "heart" as const },
-  { label: "Loved Worldwide", icon: "globe" as const },
+  { label: "Quality Selection", icon: "leaf" as const },
+  { label: "Customer Trust", icon: "heart" as const },
+  { label: "Hygienic Packaging", icon: "globe" as const },
 ];
 
 function BadgeIcon({ icon }: { icon: "leaf" | "heart" | "globe" }) {
@@ -114,7 +114,8 @@ export default async function Hero() {
           <ProductImage
             imagePath={imagePath}
             packType="makhana"
-            label="Premium Makhana"
+            label="Shrestha Makhana"
+            fit="contain"
             priority
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="aspect-[4/3] w-full rounded-2xl"

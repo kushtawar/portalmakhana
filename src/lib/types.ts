@@ -8,7 +8,7 @@ export interface ProductVariant {
   lowStockThreshold?: number;
 }
 
-export type ProductCategory = "roasted" | "flavoured" | "raw" | "gift-pack" | "spice";
+export type ProductCategory = "makhana" | "roasted" | "flavoured" | "raw" | "gift-pack" | "spice";
 
 export interface ProductAttribute {
   label: string;

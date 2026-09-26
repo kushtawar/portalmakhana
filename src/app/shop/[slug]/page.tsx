@@ -78,9 +78,9 @@ export default async function ProductDetailPage({
           <h2 className="text-lg font-semibold text-foreground">Product details</h2>
           <dl className="mt-3 space-y-2">
             {product.attributes.map((attribute) => (
-              <div key={attribute.label} className="flex justify-between text-sm">
-                <dt className="text-foreground-muted">{attribute.label}</dt>
-                <dd className="font-medium text-foreground">{attribute.value}</dd>
+              <div key={attribute.label} className="flex justify-between gap-4 text-sm">
+                <dt className="shrink-0 text-foreground-muted">{attribute.label}</dt>
+                <dd className="text-right font-medium text-foreground">{attribute.value}</dd>
               </div>
             ))}
           </dl>

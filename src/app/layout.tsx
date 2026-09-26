@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s | ItarIntakes",
   },
   description:
-    "ItarIntakes brings 10+ years of Makhana sourcing and quality experience from Patna to your table — premium roasted, flavoured and raw fox nuts, with wholesale and export capability.",
+    "Shrestha by ItarIntakes — Silver, Gold, Diamond and Handpicked Makhana plus Haldi, Dhaniya and Mircha powders from Patna. Carefully selected and hygienically packed.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

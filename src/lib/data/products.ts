@@ -7,270 +7,179 @@ export function getPackType(product: Product): PackType {
   return product.flavour && MASALA_FLAVOURS.has(product.flavour) ? "masala" : "makhana";
 }
 
+// Source of truth: "Shrestha – Website Content & Product Catalogue (Updated Prices)".
+// Shrestha is ItarIntakes' product line. Prices are given per kg; pack prices are
+// derived from them (Makhana 250 g = per-kg price ÷ 4, spices sold as 1 kg).
+const MAKHANA_USES = "Roasted Makhana, Masala Makhana, Chaat, Kheer, fasting recipes, dry-fruit mixes";
+const HANDPICKED_NOTE =
+  "In the Handpicked option, selected Makhana is manually filtered and sorted — less-suitable pieces are set aside and only the selected Makhana is packed. It is our premium hand-selection option.";
+const STOCK = 1000;
+
+function makhana(opts: {
+  id: string;
+  slug: string;
+  name: string;
+  grade: string;
+  perKg: number;
+  sku: string;
+  shortDescription: string;
+  longDescription: string;
+  tagline?: string;
+  handpicked: boolean;
+  featured?: boolean;
+  bestseller?: boolean;
+}): Product {
+  return {
+    id: opts.id,
+    slug: opts.slug,
+    name: opts.name,
+    shortDescription: opts.shortDescription,
+    longDescription: opts.longDescription,
+    category: "makhana",
+    grade: opts.grade,
+    gstRate: 5,
+    priceIncludesTax: true,
+    variants: [
+      { id: "v1", label: "250 g", price: Math.round(opts.perKg / 4), sku: opts.sku, stock: STOCK },
+    ],
+    imageLabels: [opts.name],
+    imagePath: `/products/${opts.slug}.jpg`,
+    featured: opts.featured,
+    bestseller: opts.bestseller,
+    active: true,
+    attributes: [
+      { label: "Brand", value: "Shrestha (by ItarIntakes)" },
+      { label: "Net weight", value: "250 g" },
+      { label: "Price per kg", value: `₹${opts.perKg.toLocaleString("en-IN")}/kg` },
+      { label: "Ingredient", value: "Makhana Lava" },
+      { label: "Category", value: "Makhana / Fox Nuts" },
+      {
+        label: "Processing",
+        value: opts.handpicked
+          ? "Manually filtered / selected & packed"
+          : "Machine-prepared & packed",
+      },
+      { label: "Packaging", value: "Hygienically packed" },
+      { label: "Uses", value: MAKHANA_USES },
+      ...(opts.tagline ? [{ label: "Tagline", value: opts.tagline }] : []),
+    ],
+  };
+}
+
+function spice(opts: { id: string; slug: string; name: string; sku: string; shortDescription: string }): Product {
+  return {
+    id: opts.id,
+    slug: opts.slug,
+    name: opts.name,
+    shortDescription: opts.shortDescription,
+    longDescription:
+      "Shrestha's spice range brings essential powdered spices for everyday Indian cooking. Every Indian kitchen needs a few basic spices — Shrestha Haldi, Dhaniya and Mircha are simple, useful spice essentials for everyday cooking.",
+    category: "spice",
+    gstRate: 5,
+    priceIncludesTax: true,
+    variants: [{ id: "v1", label: "1 kg", price: 400, sku: opts.sku, stock: STOCK }],
+    imageLabels: [opts.name],
+    imagePath: `/products/${opts.slug}.jpg`,
+    active: true,
+    attributes: [
+      { label: "Brand", value: "Shrestha (by ItarIntakes)" },
+      { label: "Price per kg", value: "₹400/kg" },
+      { label: "Type", value: "Powdered spice" },
+    ],
+  };
+}
+
 export const products: Product[] = [
-  {
+  makhana({
     id: "p1",
-    slug: "classic-roasted-makhana",
-    name: "Classic Roasted Makhana",
-    shortDescription: "Lightly salted, air-roasted fox nuts with a clean, crunchy bite.",
+    slug: "shrestha-silver-makhana",
+    name: "Shrestha Silver Makhana",
+    grade: "Silver",
+    perKg: 900,
+    sku: "SHR-SLV-250",
+    shortDescription: "Everyday Makhana, Shrestha quality — simple, delicious and versatile.",
     longDescription:
-      "Our signature roasted Makhana, made from premium fox nuts sourced from Patna and air-roasted with a light touch of rock salt. No added oil, no artificial flavouring — just the natural crunch our family has been perfecting for over a decade.",
-    category: "roasted",
-    grade: "Suta",
-    flavour: "Lightly Salted",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 149, sku: "ITK-CRM-100", stock: 42 },
-      { id: "v2", label: "200g", price: 269, compareAtPrice: 299, sku: "ITK-CRM-200", stock: 30 },
-      { id: "v3", label: "500g", price: 599, sku: "ITK-CRM-500", stock: 12 },
-    ],
-    imageLabels: ["Classic Roasted"],
-    imagePath: "/products/classic-roasted-makhana.jpg",
+      "Silver Makhana is our everyday Makhana, prepared and sorted with processing machinery and then hygienically packed. Light and crunchy, it works for roasted or masala Makhana, chaat, kheer, fasting recipes and dry-fruit mixes.",
+    tagline: "Simple. Delicious. Versatile.",
+    handpicked: false,
     featured: true,
-    bestseller: true,
-    active: true,
-    attributes: [
-      { label: "Grade", value: "Suta" },
-      { label: "Shelf life", value: "6 months" },
-      { label: "Packaging", value: "Resealable pack" },
-    ],
-  },
-  {
+  }),
+  makhana({
     id: "p2",
-    slug: "peri-peri-roasted-makhana",
-    name: "Peri Peri Roasted Makhana",
-    shortDescription: "A tangy, spiced twist on our classic roast for snack lovers.",
+    slug: "shrestha-gold-makhana",
+    name: "Shrestha Gold Makhana",
+    grade: "Gold",
+    perKg: 1000,
+    sku: "SHR-GLD-250",
+    shortDescription: "Carefully selected, delicious and versatile Makhana.",
     longDescription:
-      "Premium fox nuts roasted and tossed in a peri peri seasoning blend — tangy, mildly spicy and completely addictive. A popular pick for evening snacking and get-togethers.",
-    category: "flavoured",
-    grade: "Suta",
-    flavour: "Peri Peri",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 159, sku: "ITK-PPM-100", stock: 38 },
-      { id: "v2", label: "200g", price: 289, sku: "ITK-PPM-200", stock: 22 },
-    ],
-    imageLabels: ["Peri Peri"],
-    imagePath: "/products/peri-peri-roasted-makhana.jpg",
+      "Gold Makhana is carefully selected, machine-prepared and hygienically packed. A great all-rounder for roasted or masala Makhana, chaat, kheer, fasting recipes and dry-fruit mixes.",
+    tagline: "Selected Makhana. Great Taste. Shrestha Quality.",
+    handpicked: false,
     featured: true,
     bestseller: true,
-    active: true,
-    attributes: [
-      { label: "Grade", value: "Suta" },
-      { label: "Shelf life", value: "6 months" },
-      { label: "Spice level", value: "Medium" },
-    ],
-  },
-  {
+  }),
+  makhana({
     id: "p3",
-    slug: "pudina-masala-makhana",
-    name: "Pudina Masala Makhana",
-    shortDescription: "Roasted fox nuts with a refreshing mint-masala seasoning.",
-    longDescription:
-      "A cooling pudina masala blend over crunchy roasted Makhana — a favourite for anyone who likes their snacks with a herby kick.",
-    category: "flavoured",
-    grade: "Suta",
-    flavour: "Pudina Masala",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 159, sku: "ITK-PMM-100", stock: 25 },
-      { id: "v2", label: "200g", price: 289, sku: "ITK-PMM-200", stock: 18 },
-    ],
-    imageLabels: ["Pudina Masala"],
-    active: true,
-    attributes: [
-      { label: "Grade", value: "Suta" },
-      { label: "Shelf life", value: "6 months" },
-    ],
-  },
-  {
+    slug: "shrestha-handpicked-gold-makhana",
+    name: "Shrestha Handpicked Gold Makhana",
+    grade: "Gold (Handpicked)",
+    perKg: 1100,
+    sku: "SHR-GLD-HP-250",
+    shortDescription: "Gold Makhana, manually filtered and selected — our premium hand-selection option.",
+    longDescription: `Handpicked Gold is the premium option in our Gold range. ${HANDPICKED_NOTE}`,
+    tagline: "Selected Makhana. Great Taste. Shrestha Quality.",
+    handpicked: true,
+  }),
+  makhana({
     id: "p4",
-    slug: "himalayan-pink-salt-makhana",
-    name: "Himalayan Pink Salt Makhana",
-    shortDescription: "A minimal, mineral-rich take on our classic roast.",
+    slug: "shrestha-diamond-makhana",
+    name: "Shrestha Diamond Makhana",
+    grade: "Diamond",
+    perKg: 1300,
+    sku: "SHR-DMD-250",
+    shortDescription: "A premium Makhana experience — premium selection, authentic taste.",
     longDescription:
-      "For customers who prefer a purer snack, this variant uses Himalayan pink salt instead of regular rock salt — same premium fox nuts, same careful roast.",
-    category: "roasted",
-    grade: "Suta",
-    flavour: "Himalayan Pink Salt",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 169, sku: "ITK-HPS-100", stock: 20 },
-      { id: "v2", label: "200g", price: 309, sku: "ITK-HPS-200", stock: 15 },
-    ],
-    imageLabels: ["Himalayan Pink Salt"],
-    imagePath: "/products/himalayan-pink-salt-makhana.jpg",
-    active: true,
-    attributes: [
-      { label: "Grade", value: "Suta" },
-      { label: "Shelf life", value: "6 months" },
-    ],
-  },
-  {
-    id: "p5",
-    slug: "cheese-and-herb-makhana",
-    name: "Cheese & Herb Makhana",
-    shortDescription: "A savoury, herby cheese seasoning over roasted fox nuts.",
-    longDescription:
-      "A customer favourite for kids and adults alike — roasted Makhana finished with a savoury cheese and herb seasoning blend.",
-    category: "flavoured",
-    grade: "Suta",
-    flavour: "Cheese & Herb",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 169, sku: "ITK-CHM-100", stock: 28 },
-      { id: "v2", label: "200g", price: 309, sku: "ITK-CHM-200", stock: 20 },
-    ],
-    imageLabels: ["Cheese & Herb"],
+      "Diamond Makhana is our premium Makhana, machine-prepared and hygienically packed. Enjoy it roasted or as masala Makhana, in chaat, kheer, fasting recipes and dry-fruit mixes.",
+    tagline: "Premium Selection. Authentic Taste. Shrestha Quality.",
+    handpicked: false,
+    featured: true,
     bestseller: true,
-    active: true,
-    attributes: [
-      { label: "Grade", value: "Suta" },
-      { label: "Shelf life", value: "6 months" },
-    ],
-  },
-  {
+  }),
+  makhana({
+    id: "p5",
+    slug: "shrestha-handpicked-diamond-makhana",
+    name: "Shrestha Handpicked Diamond Makhana",
+    grade: "Diamond (Handpicked)",
+    perKg: 1400,
+    sku: "SHR-DMD-HP-250",
+    shortDescription: "Diamond Makhana, manually filtered and selected — our top hand-selection option.",
+    longDescription: `Handpicked Diamond is the premium option in our Diamond range. ${HANDPICKED_NOTE}`,
+    tagline: "Premium Selection. Authentic Taste. Shrestha Quality.",
+    handpicked: true,
+    featured: true,
+  }),
+  spice({
     id: "p6",
-    slug: "raw-premium-makhana",
-    name: "Raw Premium Makhana (Suta Grade)",
-    shortDescription: "Unroasted, top-grade fox nuts for cooking, kheer and roasting at home.",
-    longDescription:
-      "Top Suta-grade raw Makhana, hand-sorted for size and quality — ideal for home roasting, kheer, curries and festive preparations. This is the same grade we supply to our wholesale and export partners.",
-    category: "raw",
-    grade: "Suta",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "250g", price: 249, sku: "ITK-RAW-250", stock: 50 },
-      { id: "v2", label: "500g", price: 469, sku: "ITK-RAW-500", stock: 35 },
-      { id: "v3", label: "1kg", price: 899, sku: "ITK-RAW-1000", stock: 20 },
-    ],
-    imageLabels: ["Raw Premium"],
-    featured: true,
-    active: true,
-    attributes: [
-      { label: "Grade", value: "Suta" },
-      { label: "Use case", value: "Cooking, roasting, kheer" },
-      { label: "Shelf life", value: "9 months" },
-    ],
-  },
-  {
+    slug: "shrestha-haldi-powder",
+    name: "Shrestha Haldi Powder",
+    sku: "SHR-HLD-1000",
+    shortDescription: "Everyday haldi (turmeric) powder for Indian cooking.",
+  }),
+  spice({
     id: "p7",
-    slug: "chocolate-coated-makhana",
-    name: "Chocolate Coated Makhana",
-    shortDescription: "Roasted fox nuts dipped in a thin layer of chocolate.",
-    longDescription:
-      "A guilt-lighter indulgence — crunchy roasted Makhana coated in a thin layer of chocolate. A popular festive and gifting choice.",
-    category: "flavoured",
-    grade: "Suta",
-    flavour: "Chocolate",
-    gstRate: 12,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "150g", price: 249, sku: "ITK-CCM-150", stock: 16 },
-    ],
-    imageLabels: ["Chocolate Coated"],
-    active: true,
-    attributes: [
-      { label: "Grade", value: "Suta" },
-      { label: "Shelf life", value: "4 months" },
-      { label: "Storage", value: "Cool, dry place" },
-    ],
-  },
-  {
+    slug: "shrestha-dhaniya-powder",
+    name: "Shrestha Dhaniya Powder",
+    sku: "SHR-DHN-1000",
+    shortDescription: "Everyday dhaniya (coriander) powder for Indian cooking.",
+  }),
+  spice({
     id: "p8",
-    slug: "festive-gift-box-assorted-makhana",
-    name: "Festive Gift Box — Assorted Makhana",
-    shortDescription: "A curated gift box of our bestselling Makhana flavours.",
-    longDescription:
-      "A premium gift box featuring four of our bestselling Makhana flavours in a festive parrot-green presentation box — a popular choice for corporate gifting and festive hampers.",
-    category: "gift-pack",
-    grade: "Suta",
-    gstRate: 12,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "4 x 100g Box", price: 699, compareAtPrice: 799, sku: "ITK-GFT-400", stock: 24 },
-    ],
-    imageLabels: ["Festive Gift Box"],
-    featured: true,
-    active: true,
-    attributes: [
-      { label: "Contents", value: "4 assorted 100g packs" },
-      { label: "Shelf life", value: "6 months" },
-      { label: "Ideal for", value: "Gifting, festive hampers" },
-    ],
-  },
-  {
-    id: "p9",
-    slug: "turmeric-powder",
-    name: "Turmeric Powder",
-    shortDescription: "Pure, farm-sourced turmeric powder with no added colours.",
-    longDescription:
-      "Farm-sourced Indian turmeric, ground and packed with no added colours or fillers. A natural extension of our sourcing network alongside our Makhana range.",
-    category: "spice",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 99, sku: "ITK-TUR-100", stock: 40 },
-      { id: "v2", label: "200g", price: 179, sku: "ITK-TUR-200", stock: 25 },
-    ],
-    imageLabels: ["Turmeric Powder"],
-    imagePath: "/products/turmeric-powder.jpg",
-    active: true,
-    attributes: [
-      { label: "Type", value: "100% natural, no added colours" },
-      { label: "Shelf life", value: "12 months" },
-    ],
-  },
-  {
-    id: "p10",
-    slug: "red-chilli-powder",
-    name: "Red Chilli Powder",
-    shortDescription: "Bold, farm-sourced red chilli powder with pure natural heat.",
-    longDescription:
-      "Farm-sourced red chillies, dried and ground for consistent colour and heat, with no added colours or preservatives.",
-    category: "spice",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 109, sku: "ITK-CHI-100", stock: 35 },
-      { id: "v2", label: "200g", price: 199, sku: "ITK-CHI-200", stock: 20 },
-    ],
-    imageLabels: ["Red Chilli Powder"],
-    imagePath: "/products/red-chilli-powder.jpg",
-    active: true,
-    attributes: [
-      { label: "Type", value: "100% natural, no added colours" },
-      { label: "Shelf life", value: "12 months" },
-    ],
-  },
-  {
-    id: "p11",
-    slug: "garam-masala",
-    name: "Garam Masala",
-    shortDescription: "An aromatic blend of India's finest whole spices.",
-    longDescription:
-      "A traditional garam masala blend made from a curated mix of whole spices, ground fresh with no added preservatives.",
-    category: "spice",
-    gstRate: 5,
-    priceIncludesTax: true,
-    variants: [
-      { id: "v1", label: "100g", price: 129, sku: "ITK-GAR-100", stock: 30 },
-      { id: "v2", label: "200g", price: 229, sku: "ITK-GAR-200", stock: 18 },
-    ],
-    imageLabels: ["Garam Masala"],
-    imagePath: "/products/garam-masala.jpg",
-    active: true,
-    attributes: [
-      { label: "Type", value: "Traditional blend, no added preservatives" },
-      { label: "Shelf life", value: "12 months" },
-    ],
-  },
+    slug: "shrestha-mircha-powder",
+    name: "Shrestha Mircha (Laal Mirch) Powder",
+    sku: "SHR-MRC-1000",
+    shortDescription: "Everyday laal mirch (red chilli) powder for Indian cooking.",
+  }),
 ];
 
 export function getProductBySlug(slug: string): Product | undefined {

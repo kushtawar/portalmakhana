@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const CATEGORY_VALUES = ["roasted", "flavoured", "raw", "gift-pack", "spice"] as const;
+const CATEGORY_VALUES = ["makhana", "roasted", "flavoured", "raw", "gift-pack", "spice"] as const;
 
 export const productVariantSchema = z.object({
   id: z.string().min(1),

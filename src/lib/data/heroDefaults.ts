@@ -1,11 +1,11 @@
 // Built-in homepage hero content, shown when no active banner exists and used to
 // pre-fill the "New banner" form so admins only change what they need.
 export const HERO_DEFAULTS = {
-  eyebrow: "Natural · Nutritious · From Patna",
-  headline: "Premium Makhana from Patna",
+  eyebrow: "Shrestha · by ItarIntakes · From Patna",
+  headline: "Shrestha – Healthy Food, Healthy Life",
   subtext:
-    "Pure. Crunchy. Wholesome. Sourced from the fertile lands of Patna, our Makhana brings you the goodness of nature with 10+ years of trusted experience — supplying across India and to global markets.",
-  ctaLabel: "Shop Now",
+    "Premium Makhana and quality spices — carefully selected, hygienically packed and suited for everyday use. Our Makhana range comes in Silver, Gold and Diamond, with a Handpicked option in Gold and Diamond, where the Makhana is manually filtered and selected before packing.",
+  ctaLabel: "Explore Products",
   ctaHref: "/shop",
-  imagePath: "/products/classic-roasted-makhana.jpg",
+  imagePath: "/products/shrestha-hero.jpg",
 };

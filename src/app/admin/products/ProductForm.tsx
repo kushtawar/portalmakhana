@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Product, ProductAttribute, ProductVariant } from "@/lib/types";
@@ -37,6 +38,9 @@ export default function ProductForm({ product }: { product?: Product }) {
     product?.variants && product.variants.length > 0 ? product.variants : [emptyVariant()]
   );
   const [attributes, setAttributes] = useState<FormAttribute[]>(product?.attributes ?? []);
+  const [imagePath, setImagePath] = useState(product?.imagePath ?? "");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -46,6 +50,26 @@ export default function ProductForm({ product }: { product?: Product }) {
 
   const updateAttribute = (index: number, patch: Partial<FormAttribute>) => {
     setAttributes((prev) => prev.map((a, i) => (i === index ? { ...a, ...patch } : a)));
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setUploadError(null);
+    setUploading(true);
+
+    const body = new FormData();
+    body.append("file", file);
+    body.append("folder", "products");
+
+    try {
+      const res = await fetch("/api/media/upload", { method: "POST", body });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setImagePath(data.url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -70,7 +94,8 @@ export default function ProductForm({ product }: { product?: Product }) {
         compareAtPrice: v.compareAtPrice ? Number(v.compareAtPrice) : undefined,
       })),
       imageLabels: product?.imageLabels ?? [name],
-      imagePath: product?.imagePath,
+      // Sent as "" (not undefined) on removal so the PATCH actually clears it.
+      imagePath,
       featured,
       bestseller,
       active,
@@ -172,6 +197,46 @@ export default function ProductForm({ product }: { product?: Product }) {
             onChange={(e) => setLongDescription(e.target.value)}
             className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
+        </label>
+        <label className="text-sm text-foreground-muted sm:col-span-2">
+          Product image
+          <div className="mt-1 flex flex-col gap-4 rounded-xl border border-dashed border-border bg-muted/40 p-4 sm:flex-row sm:items-center">
+            <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-lg border border-border bg-card">
+              {imagePath ? (
+                <Image src={imagePath} alt="Product preview" fill className="object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs text-foreground-muted">
+                  No image yet
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void handleImageUpload(file);
+                }}
+                className="block w-full cursor-pointer text-sm text-foreground-muted file:mr-4 file:cursor-pointer file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              <p className="mt-2 text-xs text-foreground-muted">
+                JPEG, PNG or WebP, up to 5MB. Choosing a new file replaces the current image.
+              </p>
+              {uploading ? <p className="mt-1 text-xs text-primary">Uploading...</p> : null}
+              {uploadError ? <p className="mt-1 text-xs text-danger">{uploadError}</p> : null}
+              {imagePath ? (
+                <button
+                  type="button"
+                  onClick={() => setImagePath("")}
+                  className="mt-1 text-xs font-medium text-danger underline"
+                >
+                  Remove image
+                </button>
+              ) : null}
+            </div>
+          </div>
         </label>
         <label className="text-sm text-foreground-muted">
           GST rate (%)
@@ -324,7 +389,7 @@ export default function ProductForm({ product }: { product?: Product }) {
 
       <button
         type="submit"
-        disabled={saving}
+        disabled={saving || uploading}
         className="rounded-full bg-gradient-to-r from-primary to-primary-deep px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {saving ? "Saving..." : isEdit ? "Save changes" : "Create product"}

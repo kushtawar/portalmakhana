@@ -11,14 +11,7 @@ const STATS = [
   { value: "Hygienic", label: "Packaging" },
 ];
 
-// Small packets shown beside the main banner image to present the range.
-const RANGE = [
-  { label: "Silver", slug: "shrestha-silver-makhana" },
-  { label: "Gold", slug: "shrestha-gold-makhana" },
-  { label: "Diamond", slug: "shrestha-diamond-makhana" },
-];
-
-const BADGES = [
+export const BADGES = [
   { label: "Quality Selection", icon: "leaf" as const },
   { label: "Customer Trust", icon: "heart" as const },
   { label: "Hygienic Packaging", icon: "globe" as const },
@@ -58,7 +51,7 @@ function BadgeIcon({ icon }: { icon: "leaf" | "heart" | "globe" }) {
   );
 }
 
-function HeroBadge({ badge }: { badge: (typeof BADGES)[number] }) {
+export function HeroBadge({ badge }: { badge: (typeof BADGES)[number] }) {
   return (
     <div className="flex items-center gap-2 rounded-full bg-white/95 py-1.5 pl-1.5 pr-4 shadow-md ring-1 ring-black/5">
       <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white">
@@ -71,25 +64,52 @@ function HeroBadge({ badge }: { badge: (typeof BADGES)[number] }) {
   );
 }
 
-export default async function Hero() {
-  const banner = await getActiveBanner("home-hero");
+const SCENE_IMAGE = "/products/hero-scene.jpg";
 
-  const eyebrow = banner?.eyebrow || HERO_DEFAULTS.eyebrow;
-  const headline = banner?.headline || HERO_DEFAULTS.headline;
-  const subtext = banner?.subtext || HERO_DEFAULTS.subtext;
-  const ctaLabel = banner?.ctaLabel || HERO_DEFAULTS.ctaLabel;
-  const ctaHref = banner?.ctaHref || HERO_DEFAULTS.ctaHref;
-  const imagePath = banner?.imagePath || HERO_DEFAULTS.imagePath;
+// Where the Silver/Gold/Diamond cards sit inside SCENE_IMAGE (as % of the image),
+// so invisible links can be laid exactly over them.
+const SCENE_RANGE_LINKS = [
+  { label: "Silver", slug: "shrestha-silver-makhana", top: "16%" },
+  { label: "Gold", slug: "shrestha-gold-makhana", top: "40.1%" },
+  { label: "Diamond", slug: "shrestha-diamond-makhana", top: "64.4%" },
+];
 
+// Compact stacked badge used inside the image box, where horizontal space is tight.
+function HeroBadgeCompact({ badge }: { badge: (typeof BADGES)[number] }) {
+  return (
+    <div className="flex w-[6.25rem] flex-col items-center gap-1 rounded-xl bg-white/95 px-1.5 py-1.5 text-center shadow-md ring-1 ring-black/5">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full border-[1.5px] border-primary text-primary">
+        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+          <BadgeIcon icon={badge.icon} />
+        </svg>
+      </span>
+      <span className="text-[11px] font-semibold leading-tight text-primary-dark">{badge.label}</span>
+    </div>
+  );
+}
+
+export function HeroContent({
+  eyebrow,
+  headline,
+  subtext,
+  ctaLabel,
+  ctaHref,
+}: {
+  eyebrow: string;
+  headline: string;
+  subtext: string;
+  ctaLabel: string;
+  ctaHref: string;
+}) {
   return (
     <section className="bg-gradient-to-b from-background-subtle to-background">
-      <Container className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-2">
+      <Container className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[0.85fr_1.15fr]">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             {eyebrow}
           </p>
           <h1 className="mt-3 font-display text-4xl font-semibold leading-tight text-primary-dark sm:text-5xl">
-            {headline} <span aria-hidden>🍃</span>
+            {headline}{"\u00a0"}<span aria-hidden>🍃</span>
           </h1>
           <p className="mt-4 max-w-lg text-foreground-muted">{subtext}</p>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -118,7 +138,7 @@ export default async function Hero() {
             </Link>
           </div>
 
-          <dl className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-4">
+          <dl className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-4 lg:grid-cols-2 xl:gap-x-10">
             {STATS.map((stat) => (
               <div key={stat.label}>
                 <dt className="sr-only">{stat.label}</dt>
@@ -132,56 +152,34 @@ export default async function Hero() {
         </div>
 
         <div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-primary-deep shadow-lg lg:aspect-square">
-            {/* Blurred copy of the banner fills the panel so it never looks empty. */}
+          <div className="relative aspect-[5/3] w-full overflow-hidden rounded-2xl shadow-lg">
             <Image
-              src={imagePath}
-              alt=""
-              aria-hidden
+              src={SCENE_IMAGE}
+              alt="Shrestha Handpicked Diamond Makhana with Silver, Gold and Diamond packs"
               fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="scale-125 object-cover opacity-70 blur-2xl"
+              priority
+              sizes="(min-width: 1024px) 55vw, 100vw"
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-deep/70 via-primary-deep/20 to-primary-deep/70" />
-            {/* "lighten" drops a photo's black studio background into the backdrop. */}
-            {/* Main image fills the panel beside the range packets on the left. */}
-            <div className="absolute inset-y-3 left-3 right-3 sm:left-24">
-              <Image
-                src={imagePath}
-                alt="Shrestha Makhana packaging"
-                fill
-                priority
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                className="object-contain mix-blend-lighten drop-shadow-2xl"
+            {SCENE_RANGE_LINKS.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/shop/${item.slug}`}
+                aria-label={`Shrestha ${item.label} Makhana`}
+                style={{ top: item.top }}
+                className="absolute left-[3.4%] h-[22.2%] w-[13.4%] rounded-xl transition hover:-translate-y-0.5 hover:shadow-xl hover:ring-2 hover:ring-white focus-visible:ring-2 focus-visible:ring-white"
               />
-            </div>
-
-            <div className="absolute inset-y-0 left-4 hidden flex-col justify-center gap-2 sm:flex">
-              {RANGE.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/shop/${item.slug}`}
-                  className="group flex flex-col items-center rounded-xl p-1.5 ring-1 ring-white/25 transition hover:ring-white/60"
-                >
-                  <span className="relative block h-16 w-16">
-                    <Image
-                      src={`/products/${item.slug}.jpg`}
-                      alt={`Shrestha ${item.label} Makhana`}
-                      fill
-                      sizes="64px"
-                      className="object-contain mix-blend-lighten transition group-hover:scale-105"
-                    />
-                  </span>
-                  <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-                    {item.label}
-                  </span>
-                </Link>
+            ))}
+            {/* Near-centred, but kept above the packet's bulging bottom-right corner. */}
+            <div className="absolute right-2 top-[18%] hidden flex-col gap-1.5 xl:flex">
+              {BADGES.map((badge) => (
+                <HeroBadgeCompact key={badge.label} badge={badge} />
               ))}
             </div>
-
           </div>
 
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {/* Below xl the box is too small for the in-image badges. */}
+          <div className="mt-4 flex flex-wrap justify-center gap-2 xl:hidden">
             {BADGES.map((badge) => (
               <HeroBadge key={badge.label} badge={badge} />
             ))}
@@ -189,5 +187,19 @@ export default async function Hero() {
         </div>
       </Container>
     </section>
+  );
+}
+
+export default async function Hero() {
+  const banner = await getActiveBanner("home-hero");
+
+  return (
+    <HeroContent
+      eyebrow={banner?.eyebrow || HERO_DEFAULTS.eyebrow}
+      headline={banner?.headline || HERO_DEFAULTS.headline}
+      subtext={banner?.subtext || HERO_DEFAULTS.subtext}
+      ctaLabel={banner?.ctaLabel || HERO_DEFAULTS.ctaLabel}
+      ctaHref={banner?.ctaHref || HERO_DEFAULTS.ctaHref}
+    />
   );
 }

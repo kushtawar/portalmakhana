@@ -2,8 +2,8 @@ import Container from "@/components/layout/Container";
 
 const POINTS = [
   {
-    title: "High Protein",
-    detail: "Keeps you stronger",
+    title: "Plant Protein",
+    detail: "Part of a balanced diet",
     icon: (
       <path
         d="M6 12h2m8 0h2M8 8v8m8-8v8M8 8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2m-8 8a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2"
@@ -14,8 +14,8 @@ const POINTS = [
     ),
   },
   {
-    title: "Low Calories",
-    detail: "Guilt-free snacking",
+    title: "Naturally Low in Fat",
+    detail: "A light snack when roasted",
     icon: (
       <path
         d="M12 3c3 3 5 6 5 9a5 5 0 0 1-10 0c0-3 2-6 5-9Z"
@@ -26,8 +26,8 @@ const POINTS = [
     ),
   },
   {
-    title: "Gluten Free",
-    detail: "Good for everyone",
+    title: "Dietary Fibre",
+    detail: "Plus calcium & magnesium",
     icon: (
       <path
         d="m4 12 5 5L20 6"

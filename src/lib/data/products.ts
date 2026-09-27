@@ -11,8 +11,6 @@ export function getPackType(product: Product): PackType {
 // Shrestha is ItarIntakes' product line. Prices are given per kg; pack prices are
 // derived from them (Makhana 250 g = per-kg price ÷ 4, spices sold as 1 kg).
 const MAKHANA_USES = "Roasted Makhana, Masala Makhana, Chaat, Kheer, fasting recipes, dry-fruit mixes";
-const HANDPICKED_NOTE =
-  "In the Handpicked option, selected Makhana is manually filtered and sorted — less-suitable pieces are set aside and only the selected Makhana is packed. It is our premium hand-selection option.";
 const STOCK = 1000;
 
 function makhana(opts: {
@@ -25,7 +23,8 @@ function makhana(opts: {
   shortDescription: string;
   longDescription: string;
   tagline?: string;
-  handpicked: boolean;
+  /** "Selection" column from the Shrestha Makhana product-descriptions document. */
+  selection: string;
   featured?: boolean;
   bestseller?: boolean;
 }): Product {
@@ -53,12 +52,7 @@ function makhana(opts: {
       { label: "Price per kg", value: `₹${opts.perKg.toLocaleString("en-IN")}/kg` },
       { label: "Ingredient", value: "Makhana Lava" },
       { label: "Category", value: "Makhana / Fox Nuts" },
-      {
-        label: "Processing",
-        value: opts.handpicked
-          ? "Manually filtered / selected & packed"
-          : "Machine-prepared & packed",
-      },
+      { label: "Selection", value: opts.selection },
       { label: "Packaging", value: "Hygienically packed" },
       { label: "Uses", value: MAKHANA_USES },
       ...(opts.tagline ? [{ label: "Tagline", value: opts.tagline }] : []),
@@ -93,90 +87,99 @@ export const products: Product[] = [
   makhana({
     id: "p1",
     slug: "shrestha-silver-makhana",
-    name: "Shrestha Silver Makhana",
+    name: "Silver Makhana",
     grade: "Silver",
     perKg: 900,
     sku: "SHR-SLV-250",
-    shortDescription: "Everyday Makhana, Shrestha quality — simple, delicious and versatile.",
+    shortDescription:
+      "Our regular graded makhana — good quality for everyday snacking and cooking.",
     longDescription:
-      "Silver Makhana is our everyday Makhana, prepared and sorted with processing machinery and then hygienically packed. Light and crunchy, it works for roasted or masala Makhana, chaat, kheer, fasting recipes and dry-fruit mixes.",
+      "Shrestha Silver Makhana is our regular graded makhana option, offering good quality for everyday use. It generally contains comparatively smaller and more mixed-size kernels than the higher Gold and Diamond grades, making it a practical choice for families who want makhana as part of their regular snack or cooking routine. Roast and season it to your taste, or use it in homemade recipes such as makhana curry, kheer and other preparations. Our grading process separates makhana into different quality and size categories before packing; the final size mix can vary naturally with the agricultural harvest. Silver offers an accessible way to enjoy makhana while retaining its characteristic light and crunchy nature when roasted.",
     tagline: "Simple. Delicious. Versatile.",
-    handpicked: false,
+    selection: "Regular graded selection",
     featured: true,
   }),
   makhana({
     id: "p2",
     slug: "shrestha-gold-makhana",
-    name: "Shrestha Gold Makhana",
+    name: "Gold Makhana",
     grade: "Gold",
     perKg: 1000,
     sku: "SHR-GLD-250",
-    shortDescription: "Carefully selected, delicious and versatile Makhana.",
+    shortDescription:
+      "Premium-grade makhana — generally larger, fuller and more uniform than Silver.",
     longDescription:
-      "Gold Makhana is carefully selected, machine-prepared and hygienically packed. A great all-rounder for roasted or masala Makhana, chaat, kheer, fasting recipes and dry-fruit mixes.",
+      "Shrestha Gold Makhana is a premium-grade makhana selected for its fuller appearance and better size profile. It is generally larger and more uniform than the regular Silver grade, and the kernels are carefully graded to offer a satisfying combination of size, appearance and texture. Gold is a great choice for a premium everyday makhana experience — enjoy it roasted, lightly seasoned or in a variety of homemade recipes. The Gold range suits everyday snacking as well as premium presentation. For additional manual selection, Gold is also available as Handpicked Gold.",
     tagline: "Selected Makhana. Great Taste. Shrestha Quality.",
-    handpicked: false,
+    selection: "Premium graded selection",
     featured: true,
     bestseller: true,
   }),
   makhana({
     id: "p3",
     slug: "shrestha-handpicked-gold-makhana",
-    name: "Shrestha Handpicked Gold Makhana",
+    name: "Handpicked Gold Makhana",
     grade: "Gold (Handpicked)",
     perKg: 1100,
     sku: "SHR-GLD-HP-250",
-    shortDescription: "Gold Makhana, manually filtered and selected — our premium hand-selection option.",
-    longDescription: `Handpicked Gold is the premium option in our Gold range. ${HANDPICKED_NOTE}`,
+    shortDescription:
+      "Gold Makhana, manually filtered and selected before packing for an extra level of sorting.",
+    longDescription:
+      "Handpicked Gold is our premium-grade Gold Makhana with an extra level of sorting: the makhana is manually filtered and selected before packing, rather than relying only on machine-based grading. Like Gold, it is selected for a fuller appearance and better size profile — generally larger and more uniform than Silver. It is ideal for customers who prefer more manual sorting and selection, for everyday snacking as well as premium presentation.",
     tagline: "Selected Makhana. Great Taste. Shrestha Quality.",
-    handpicked: true,
+    selection: "Manually filtered",
+    featured: true,
+    bestseller: true,
   }),
   makhana({
     id: "p4",
     slug: "shrestha-diamond-makhana",
-    name: "Shrestha Diamond Makhana",
+    name: "Diamond Makhana",
     grade: "Diamond",
     perKg: 1300,
     sku: "SHR-DMD-250",
-    shortDescription: "A premium Makhana experience — premium selection, authentic taste.",
+    shortDescription:
+      "Our top premium grade — larger, fuller makhana carefully graded for a premium selection.",
     longDescription:
-      "Diamond Makhana is our premium Makhana, machine-prepared and hygienically packed. Enjoy it roasted or as masala Makhana, in chaat, kheer, fasting recipes and dry-fruit mixes.",
+      "Shrestha Diamond Makhana is our top premium grade, selected for a larger and fuller appearance. It is generally the largest and most premium-looking grade among our Silver, Gold and Diamond range, with kernels carefully graded for customers who prefer larger makhana. Diamond is ideal for premium snacking, special occasions and anyone seeking a higher-grade selection — roast it, season it, or use it in traditional and modern makhana recipes. The exact size may vary naturally from harvest to harvest, while the grade is maintained through selection. Diamond is also available in a Handpicked version.",
     tagline: "Premium Selection. Authentic Taste. Shrestha Quality.",
-    handpicked: false,
+    selection: "Top premium graded selection",
     featured: true,
     bestseller: true,
   }),
   makhana({
     id: "p5",
     slug: "shrestha-handpicked-diamond-makhana",
-    name: "Shrestha Handpicked Diamond Makhana",
+    name: "Handpicked Diamond Makhana",
     grade: "Diamond (Handpicked)",
     perKg: 1400,
     sku: "SHR-DMD-HP-250",
-    shortDescription: "Diamond Makhana, manually filtered and selected — our top hand-selection option.",
-    longDescription: `Handpicked Diamond is the premium option in our Diamond range. ${HANDPICKED_NOTE}`,
+    shortDescription:
+      "Our top premium Diamond grade, manually filtered and selected before packing.",
+    longDescription:
+      "Handpicked Diamond is our top premium Diamond grade with an extra stage of human sorting: the makhana is manually filtered and selected before packing, rather than relying only on machine-based grading. Like Diamond, it is selected for a larger and fuller appearance — ideal for premium snacking, special occasions and customers who prefer additional manual selection.",
     tagline: "Premium Selection. Authentic Taste. Shrestha Quality.",
-    handpicked: true,
+    selection: "Manually filtered",
     featured: true,
   }),
   spice({
     id: "p6",
     slug: "shrestha-haldi-powder",
-    name: "Shrestha Haldi Powder",
+    name: "Haldi Powder",
     sku: "SHR-HLD-1000",
     shortDescription: "Everyday haldi (turmeric) powder for Indian cooking.",
   }),
   spice({
     id: "p7",
     slug: "shrestha-dhaniya-powder",
-    name: "Shrestha Dhaniya Powder",
+    name: "Dhaniya Powder",
     sku: "SHR-DHN-1000",
     shortDescription: "Everyday dhaniya (coriander) powder for Indian cooking.",
   }),
   spice({
     id: "p8",
     slug: "shrestha-mircha-powder",
-    name: "Shrestha Mircha (Laal Mirch) Powder",
+    name: "Laal Mirch Powder",
     sku: "SHR-MRC-1000",
     shortDescription: "Everyday laal mirch (red chilli) powder for Indian cooking.",
   }),

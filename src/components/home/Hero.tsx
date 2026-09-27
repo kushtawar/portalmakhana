@@ -132,7 +132,7 @@ export default async function Hero() {
         </div>
 
         <div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-primary-deep shadow-lg">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-primary-deep shadow-lg lg:aspect-square">
             {/* Blurred copy of the banner fills the panel so it never looks empty. */}
             <Image
               src={imagePath}
@@ -144,8 +144,8 @@ export default async function Hero() {
             />
             <div className="absolute inset-0 bg-gradient-to-br from-primary-deep/70 via-primary-deep/20 to-primary-deep/70" />
             {/* "lighten" drops a photo's black studio background into the backdrop. */}
-            {/* Main image sits between the range packets (left) and the badges (right). */}
-            <div className="absolute inset-y-3 left-3 right-3 sm:left-24 lg:right-48">
+            {/* Main image fills the panel beside the range packets on the left. */}
+            <div className="absolute inset-y-3 left-3 right-3 sm:left-24">
               <Image
                 src={imagePath}
                 alt="Shrestha Makhana packaging"
@@ -179,14 +179,9 @@ export default async function Hero() {
               ))}
             </div>
 
-            <div className="absolute right-4 top-1/2 hidden -translate-y-1/2 flex-col gap-3 lg:flex">
-              {BADGES.map((badge) => (
-                <HeroBadge key={badge.label} badge={badge} />
-              ))}
-            </div>
           </div>
 
-          <div className="mt-4 flex flex-wrap justify-center gap-2 lg:hidden">
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
             {BADGES.map((badge) => (
               <HeroBadge key={badge.label} badge={badge} />
             ))}

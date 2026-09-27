@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/layout/Container";
+import { HEALTH_DISCLAIMER } from "@/lib/policies";
 
 const columns = [
   {
@@ -65,6 +66,15 @@ export default function Footer() {
           </div>
         ))}
       </Container>
+
+      <div className="border-t border-border">
+        <Container className="py-4">
+          <p className="text-xs leading-relaxed text-foreground-muted">
+            <span className="font-semibold text-foreground">Not medical advice: </span>
+            {HEALTH_DISCLAIMER}
+          </p>
+        </Container>
+      </div>
 
       <div className="border-t border-border">
         <Container className="flex flex-col gap-2 py-6 text-xs text-foreground-muted sm:flex-row sm:items-center sm:justify-between">

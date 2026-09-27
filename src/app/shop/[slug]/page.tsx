@@ -6,6 +6,7 @@ import ProductPurchasePanel from "@/components/product/ProductPurchasePanel";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import { getPackType } from "@/lib/data/products";
 import { getProductBySlug, getRelatedProducts } from "@/lib/db/products";
+import { HEALTH_DISCLAIMER } from "@/lib/policies";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,10 @@ export default async function ProductDetailPage({
           <h2 className="text-lg font-semibold text-foreground">Description</h2>
           <p className="mt-3 text-sm leading-relaxed text-foreground-muted">
             {product.longDescription}
+          </p>
+          <p className="mt-5 rounded-lg border border-accent/30 bg-accent-light px-4 py-3 text-xs leading-relaxed text-foreground-muted">
+            <span className="font-semibold text-foreground">Please note: </span>
+            {HEALTH_DISCLAIMER}
           </p>
         </div>
         <div>

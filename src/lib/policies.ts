@@ -66,3 +66,8 @@ export const policies: Record<string, PolicyContent> = {
     ],
   },
 };
+
+// Shown site-wide and on product pages. Product packaging carries health wording,
+// so the site states clearly that makhana is a food, not a medicine.
+export const HEALTH_DISCLAIMER =
+  "Makhana is a nutritious food, not a medicine. Information on this website and on our packaging is general information only — it is not medical advice and is not intended to diagnose, treat, cure or prevent any disease. Please consult a doctor or qualified nutritionist for advice about your health or diet.";

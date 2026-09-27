@@ -101,6 +101,9 @@ export function HeroContent({
   ctaLabel: string;
   ctaHref: string;
 }) {
+  // "Main headline – tagline": the part after the dash renders as a smaller second line.
+  const [mainHeadline, tagline] = headline.split(/\s+[–-]\s+/, 2);
+
   return (
     <section className="bg-gradient-to-b from-background-subtle to-background">
       <Container className="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[0.85fr_1.15fr]">
@@ -108,8 +111,21 @@ export function HeroContent({
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             {eyebrow}
           </p>
-          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight text-primary-dark sm:text-5xl">
-            {headline}{"\u00a0"}<span aria-hidden>🍃</span>
+          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight text-primary-dark sm:text-5xl lg:text-[2.75rem]">
+            {mainHeadline}
+            {tagline ? <span className="sr-only"> – </span> : null}
+            {tagline ? (
+              <span className="mt-2 block text-2xl font-medium text-primary sm:text-3xl">
+                {tagline}
+                {"\u00a0"}
+                <span aria-hidden>🍃</span>
+              </span>
+            ) : (
+              <>
+                {"\u00a0"}
+                <span aria-hidden>🍃</span>
+              </>
+            )}
           </h1>
           <p className="mt-4 max-w-lg text-foreground-muted">{subtext}</p>
           <div className="mt-6 flex flex-wrap gap-3">

@@ -64,7 +64,7 @@ export function HeroBadge({ badge }: { badge: (typeof BADGES)[number] }) {
   );
 }
 
-const SCENE_IMAGE = "/products/hero-scene.jpg";
+const SCENE_IMAGE = "/products/hero-scene-v2.jpg";
 
 // Where the Silver/Gold/Diamond cards sit inside SCENE_IMAGE (as % of the image),
 // so invisible links can be laid exactly over them.

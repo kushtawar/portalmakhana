@@ -17,7 +17,7 @@ export default function OriginStory() {
     <section className="py-14">
       <Container className="grid items-center gap-10 lg:grid-cols-2">
         <ProductImage
-          imagePath="/products/shrestha-handpicked-diamond-makhana.jpg"
+          imagePath="/products/shrestha-handpicked-diamond-makhana-v2.jpg"
           packType="makhana"
           label="Shrestha Handpicked Diamond Makhana"
           sizes="(min-width: 1024px) 50vw, 100vw"

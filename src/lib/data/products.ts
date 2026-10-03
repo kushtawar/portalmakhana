@@ -42,7 +42,7 @@ function makhana(opts: {
       { id: "v1", label: "250 g", price: Math.round(opts.perKg / 4), sku: opts.sku, stock: STOCK },
     ],
     imageLabels: [opts.name],
-    imagePath: `/products/${opts.slug}.jpg`,
+    imagePath: `/products/${opts.slug}-v2.jpg`,
     featured: opts.featured,
     bestseller: opts.bestseller,
     active: true,

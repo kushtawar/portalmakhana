@@ -37,7 +37,7 @@ export default function AboutPage() {
           </p>
         </div>
         <ProductImage
-          imagePath="/products/shrestha-hero.jpg"
+          imagePath="/products/shrestha-hero-v2.jpg"
           packType="makhana"
           label="Shrestha Handpicked Gold and Diamond Makhana"
           sizes="(min-width: 1024px) 50vw, 100vw"

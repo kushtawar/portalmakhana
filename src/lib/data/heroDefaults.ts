@@ -7,5 +7,5 @@ export const HERO_DEFAULTS = {
     "Premium Makhana and quality spices — carefully selected, hygienically packed and suited for everyday use. Our Makhana range comes in Silver, Gold and Diamond, with a Handpicked option in Gold and Diamond, where the Makhana is manually filtered and selected before packing.",
   ctaLabel: "Explore Products",
   ctaHref: "/shop",
-  imagePath: "/products/shrestha-hero.jpg",
+  imagePath: "/products/shrestha-hero-v2.jpg",
 };

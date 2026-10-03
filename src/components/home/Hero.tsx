@@ -138,7 +138,7 @@ export function HeroContent({
             </Link>
             <Link
               href="/wholesale"
-              className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-md ring-2 ring-accent/30 ring-offset-2 ring-offset-background transition hover:-translate-y-0.5 hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-deep px-6 py-3 text-sm font-semibold text-white shadow-md ring-2 ring-primary/25 ring-offset-2 ring-offset-background transition hover:-translate-y-0.5 hover:shadow-lg"
             >
               <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
                 <circle cx="9" cy="8" r="3" stroke="currentColor" strokeWidth="1.6" />

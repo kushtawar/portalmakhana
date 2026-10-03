@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
   { href: "/about", label: "About" },
-  { href: "/wholesale", label: "Wholesale-Order" },
+  { href: "/wholesale", label: "Wholesale-Order", highlight: true },
   { href: "/export", label: "Export" },
   { href: "/contact", label: "Contact" },
 ];
@@ -65,7 +65,11 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-foreground-muted transition-colors hover:text-primary"
+                className={
+                  link.highlight
+                    ? "rounded-full border-[1.5px] border-dashed border-primary px-3.5 py-1.5 text-sm font-semibold text-primary transition-colors hover:border-solid hover:bg-primary hover:text-white"
+                    : "text-sm font-medium text-foreground-muted transition-colors hover:text-primary"
+                }
               >
                 {link.label}
               </Link>

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Stories & Recipes",
   description:
-    "Stories, recipes, Makhana knowledge, health and nutrition articles, and company updates from ItarIntakes.",
+    "Stories, recipes, Makhana knowledge, health and nutrition articles, and company updates from PatnaMakhana.",
 };
 
 export default async function StoriesPage() {
@@ -20,7 +20,7 @@ export default async function StoriesPage() {
       <SectionHeading
         eyebrow="Stories & Recipes"
         title="From our kitchen and our fields"
-        description="Makhana knowledge, recipes, health notes and updates from the ItarIntakes team."
+        description="Makhana knowledge, recipes, health notes and updates from the PatnaMakhana team."
       />
       <div className="mt-8">
         <StoriesGrid articles={articles} />

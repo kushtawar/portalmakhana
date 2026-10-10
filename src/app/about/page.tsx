@@ -6,7 +6,7 @@ import ProductImage from "@/components/product/ProductImage";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Shrestha, from the ItarIntakes group, brings carefully selected, hygienically packed Makhana and spices to your table.",
+    "Shrestha, from the PatnaMakhana group, brings carefully selected, hygienically packed Makhana and spices to your table.",
 };
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
       <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-center">
         <div className="space-y-4 text-sm leading-relaxed text-foreground-muted">
           <p>
-            Shrestha is a product line from the ItarIntakes group, based in Patna. Our aim is to
+            Shrestha is a product line from the PatnaMakhana group, based in Patna. Our aim is to
             bring traditional Indian food products to customers with quality-focused selection,
             careful processing and hygienic packaging.
           </p>

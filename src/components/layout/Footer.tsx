@@ -39,7 +39,7 @@ export default function Footer() {
           <div className="flex items-center gap-2">
             <Image src="/brand/logo-mark.png" alt="" width={32} height={32} className="h-8 w-8" />
             <p className="font-display text-lg font-semibold text-foreground">
-              Itar<span className="text-primary">Intakes</span>
+              Patna<span className="text-primary">Makhana</span>
             </p>
           </div>
           <p className="mt-2 max-w-xs text-sm text-foreground-muted">
@@ -78,7 +78,7 @@ export default function Footer() {
 
       <div className="border-t border-border">
         <Container className="flex flex-col gap-2 py-6 text-xs text-foreground-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} ItarIntakes. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} PatnaMakhana. All rights reserved.</p>
           <p>Prices are inclusive of applicable GST unless stated otherwise.</p>
           <p>
             Powered by{" "}

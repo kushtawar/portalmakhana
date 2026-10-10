@@ -24,7 +24,7 @@ export async function notifyNewEnquiry(enquiry: Enquiry): Promise<void> {
     replyTo,
     subject: `New ${TYPE_LABEL[enquiry.type]} enquiry from ${contactName}`,
     text: [
-      `A new ${TYPE_LABEL[enquiry.type].toLowerCase()} enquiry was submitted on the ItarIntakes website.`,
+      `A new ${TYPE_LABEL[enquiry.type].toLowerCase()} enquiry was submitted on the PatnaMakhana website.`,
       "",
       ...lines,
       "",

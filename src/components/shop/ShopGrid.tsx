@@ -12,6 +12,9 @@ const CATEGORY_LABELS: Record<ProductCategory, string> = {
   raw: "Raw",
   "gift-pack": "Gift Packs",
   spice: "Spices",
+  "dry-fruit": "Dry Fruits",
+  pooja: "Pooja Essentials",
+  tea: "Tea",
 };
 
 export default function ShopGrid({ products }: { products: Product[] }) {

@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
         className="w-full max-w-sm rounded-xl border border-border bg-card p-8"
       >
         <p className="font-display text-xl font-semibold text-foreground">
-          Itar<span className="text-primary">Intakes</span>
+          Patna<span className="text-primary">Makhana</span>
         </p>
         <p className="mt-1 text-sm text-foreground-muted">Admin sign in</p>
 

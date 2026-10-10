@@ -2,6 +2,7 @@ import "server-only";
 import { connectToDatabase } from "@/lib/db/connect";
 import { ArticleModel, type ArticleDoc } from "@/lib/db/models/Article";
 import type { Article } from "@/lib/types";
+import { legacySlugFor } from "@/lib/articleSlugRenames";
 
 function toArticle(doc: ArticleDoc & { _id: unknown }): Article {
   return {
@@ -40,4 +41,15 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   await connectToDatabase();
   const doc = await ArticleModel.findOne({ slug }).lean();
   return doc ? toArticle(doc as ArticleDoc & { _id: unknown }) : null;
+}
+
+/**
+ * Public article lookup. Same as getArticleBySlug, but a renamed slug also finds the article
+ * under its pre-rebrand slug, so the new URL works before and after the database rename.
+ */
+export async function getArticleBySlugOrLegacy(slug: string): Promise<Article | null> {
+  const article = await getArticleBySlug(slug);
+  if (article) return article;
+  const legacy = legacySlugFor(slug);
+  return legacy ? getArticleBySlug(legacy) : null;
 }

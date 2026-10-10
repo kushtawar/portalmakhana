@@ -1,7 +1,17 @@
 import mongoose, { Schema, type HydratedDocument } from "mongoose";
 import type { ProductCategory } from "@/lib/types";
 
-const CATEGORY_VALUES: ProductCategory[] = ["makhana", "roasted", "flavoured", "raw", "gift-pack", "spice"];
+const CATEGORY_VALUES: ProductCategory[] = [
+  "makhana",
+  "roasted",
+  "flavoured",
+  "raw",
+  "gift-pack",
+  "spice",
+  "dry-fruit",
+  "pooja",
+  "tea",
+];
 
 export interface ProductVariantDoc {
   id: string;

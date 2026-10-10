@@ -5,7 +5,17 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Product, ProductAttribute, ProductVariant } from "@/lib/types";
 
-const CATEGORIES = ["makhana", "roasted", "flavoured", "raw", "gift-pack", "spice"] as const;
+const CATEGORIES = [
+  "makhana",
+  "roasted",
+  "flavoured",
+  "raw",
+  "gift-pack",
+  "spice",
+  "dry-fruit",
+  "pooja",
+  "tea",
+] as const;
 
 type FormVariant = ProductVariant;
 type FormAttribute = ProductAttribute;

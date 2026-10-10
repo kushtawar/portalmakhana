@@ -38,7 +38,7 @@ export default function ArticleForm({ article }: { article?: Article }) {
   const [imagePath, setImagePath] = useState(article?.imagePath ?? "");
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [author, setAuthor] = useState(article?.author ?? "ItarIntakes Team");
+  const [author, setAuthor] = useState(article?.author ?? "PatnaMakhana Team");
   const [category, setCategory] = useState<ArticleCategory>(article?.category ?? "Stories");
   const [tags, setTags] = useState(article?.tags.join(", ") ?? "");
   const [publishDate, setPublishDate] = useState(

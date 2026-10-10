@@ -29,11 +29,11 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "ItarIntakes — Premium Makhana from Patna",
-    template: "%s | ItarIntakes",
+    default: "PatnaMakhana — Premium Makhana from Patna",
+    template: "%s | PatnaMakhana",
   },
   description:
-    "Shrestha by ItarIntakes — Silver, Gold, Diamond and Handpicked Makhana plus Haldi, Dhaniya and Mircha powders from Patna. Carefully selected and hygienically packed.",
+    "Shrestha by PatnaMakhana — Silver, Gold, Diamond and Handpicked Makhana plus Haldi, Dhaniya and Mircha powders from Patna. Carefully selected and hygienically packed.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

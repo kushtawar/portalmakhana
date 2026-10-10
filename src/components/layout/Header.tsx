@@ -52,7 +52,7 @@ export default function Header() {
             <Image src="/brand/logo-mark.png" alt="" width={36} height={36} className="h-9 w-9" />
             <span>
               <p className="font-display text-xl font-semibold text-foreground">
-                Itar<span className="text-primary">Intakes</span>
+                Patna<span className="text-primary">Makhana</span>
               </p>
               <p className="text-[10px] font-medium uppercase tracking-wider text-foreground-muted">
                 Pure Makhana. A Better You.

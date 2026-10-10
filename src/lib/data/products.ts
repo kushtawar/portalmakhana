@@ -7,11 +7,23 @@ export function getPackType(product: Product): PackType {
   return product.flavour && MASALA_FLAVOURS.has(product.flavour) ? "masala" : "makhana";
 }
 
-// Source of truth: "Shrestha – Website Content & Product Catalogue (Updated Prices)".
-// Shrestha is ItarIntakes' product line. Prices are given per kg; pack prices are
-// derived from them (Makhana 250 g = per-kg price ÷ 4, spices sold as 1 kg).
+// Names, pack weights and rates per kg: the business's product catalogue (13 products).
+// Descriptions: "Shrestha – Website Content & Product Catalogue" and the Shrestha Makhana
+// product-descriptions document. Shrestha is PatnaMakhana's product line.
+// Pack price = rate per kg × pack weight, rounded to the nearest rupee.
 const MAKHANA_USES = "Roasted Makhana, Masala Makhana, Chaat, Kheer, fasting recipes, dry-fruit mixes";
 const STOCK = 1000;
+
+/**
+ * PROVISIONAL total GST (%) for the six products added in the 13-product catalogue update
+ * (Khada Garam Masala, Jeera Powder, both cashews, Camphor, Tea Leaves). The business has
+ * not yet confirmed their tax rates — confirm each before treating it as a final tax
+ * setting. The app stores one combined rate (gstRate), not separate CGST/SGST.
+ */
+export const PROVISIONAL_GST_RATE = 5;
+
+const packPrice = (perKg: number, grams: number) => Math.round((perKg * grams) / 1000);
+const perKgLabel = (perKg: number) => `₹${perKg.toLocaleString("en-IN")}/kg`;
 
 function makhana(opts: {
   id: string;
@@ -39,7 +51,7 @@ function makhana(opts: {
     gstRate: 5,
     priceIncludesTax: true,
     variants: [
-      { id: "v1", label: "250 g", price: Math.round(opts.perKg / 4), sku: opts.sku, stock: STOCK },
+      { id: "v1", label: "250 g", price: packPrice(opts.perKg, 250), sku: opts.sku, stock: STOCK },
     ],
     imageLabels: [opts.name],
     imagePath: `/products/${opts.slug}-v2.jpg`,
@@ -47,9 +59,9 @@ function makhana(opts: {
     bestseller: opts.bestseller,
     active: true,
     attributes: [
-      { label: "Brand", value: "Shrestha (by ItarIntakes)" },
+      { label: "Brand", value: "Shrestha (by PatnaMakhana)" },
       { label: "Net weight", value: "250 g" },
-      { label: "Price per kg", value: `₹${opts.perKg.toLocaleString("en-IN")}/kg` },
+      { label: "Price per kg", value: perKgLabel(opts.perKg) },
       { label: "Ingredient", value: "Makhana Lava" },
       { label: "Category", value: "Makhana / Fox Nuts" },
       { label: "Selection", value: opts.selection },
@@ -60,36 +72,58 @@ function makhana(opts: {
   };
 }
 
-function spice(opts: { id: string; slug: string; name: string; sku: string; shortDescription: string }): Product {
+/** Non-makhana products: one pack size, priced from the rate per kg. */
+function packed(opts: {
+  id: string;
+  slug: string;
+  name: string;
+  category: Product["category"];
+  grams: number;
+  perKg: number;
+  sku: string;
+  type: string;
+  /** Total GST %. */
+  gstRate: number;
+  shortDescription: string;
+  longDescription: string;
+  /** Existing photo; new products without one get a placeholder to replace in the admin. */
+  imagePath?: string;
+}): Product {
+  const weight = `${opts.grams} g`;
   return {
     id: opts.id,
     slug: opts.slug,
     name: opts.name,
     shortDescription: opts.shortDescription,
-    longDescription:
-      "Shrestha's spice range brings essential powdered spices for everyday Indian cooking. Every Indian kitchen needs a few basic spices — Shrestha Haldi, Dhaniya and Mircha are simple, useful spice essentials for everyday cooking.",
-    category: "spice",
-    gstRate: 5,
+    longDescription: opts.longDescription,
+    category: opts.category,
+    gstRate: opts.gstRate,
     priceIncludesTax: true,
-    variants: [{ id: "v1", label: "1 kg", price: 400, sku: opts.sku, stock: STOCK }],
+    variants: [
+      { id: "v1", label: weight, price: packPrice(opts.perKg, opts.grams), sku: opts.sku, stock: STOCK },
+    ],
     imageLabels: [opts.name],
-    imagePath: `/products/${opts.slug}.jpg`,
+    imagePath: opts.imagePath ?? `/products/placeholders/${opts.slug}.jpg`,
     active: true,
     attributes: [
-      { label: "Brand", value: "Shrestha (by ItarIntakes)" },
-      { label: "Price per kg", value: "₹400/kg" },
-      { label: "Type", value: "Powdered spice" },
+      { label: "Brand", value: "Shrestha (by PatnaMakhana)" },
+      { label: "Net weight", value: weight },
+      { label: "Price per kg", value: perKgLabel(opts.perKg) },
+      { label: "Type", value: opts.type },
     ],
   };
 }
+
+const SPICE_DESCRIPTION =
+  "Shrestha's spice range brings essential spices for everyday Indian cooking — simple, useful kitchen staples, hygienically packed.";
 
 export const products: Product[] = [
   makhana({
     id: "p1",
     slug: "shrestha-silver-makhana",
-    name: "Silver Makhana",
-    grade: "Silver",
-    perKg: 900,
+    name: "Makhana Silver (4 Suta)",
+    grade: "Silver (4 Suta)",
+    perKg: 800,
     sku: "SHR-SLV-250",
     shortDescription:
       "Our regular graded makhana — good quality for everyday snacking and cooking.",
@@ -102,9 +136,9 @@ export const products: Product[] = [
   makhana({
     id: "p2",
     slug: "shrestha-gold-makhana",
-    name: "Gold Makhana",
-    grade: "Gold",
-    perKg: 1000,
+    name: "Makhana Gold (5 Suta)",
+    grade: "Gold (5 Suta)",
+    perKg: 940,
     sku: "SHR-GLD-250",
     shortDescription:
       "Premium-grade makhana — generally larger, fuller and more uniform than Silver.",
@@ -118,7 +152,7 @@ export const products: Product[] = [
   makhana({
     id: "p3",
     slug: "shrestha-handpicked-gold-makhana",
-    name: "Handpicked Gold Makhana",
+    name: "Makhana Hand Picked Gold",
     grade: "Gold (Handpicked)",
     perKg: 1100,
     sku: "SHR-GLD-HP-250",
@@ -134,8 +168,8 @@ export const products: Product[] = [
   makhana({
     id: "p4",
     slug: "shrestha-diamond-makhana",
-    name: "Diamond Makhana",
-    grade: "Diamond",
+    name: "Makhana Diamond (6 Suta)",
+    grade: "Diamond (6 Suta)",
     perKg: 1300,
     sku: "SHR-DMD-250",
     shortDescription:
@@ -150,7 +184,7 @@ export const products: Product[] = [
   makhana({
     id: "p5",
     slug: "shrestha-handpicked-diamond-makhana",
-    name: "Handpicked Diamond Makhana",
+    name: "Makhana Hand Picked Diamond",
     grade: "Diamond (Handpicked)",
     perKg: 1400,
     sku: "SHR-DMD-HP-250",
@@ -162,26 +196,114 @@ export const products: Product[] = [
     selection: "Manually filtered",
     featured: true,
   }),
-  spice({
+  packed({
     id: "p6",
+    slug: "shrestha-khada-garam-masala",
+    name: "Khada Garam Masala",
+    category: "spice",
+    grams: 100,
+    perKg: 1500,
+    sku: "SHR-KGM-100",
+    type: "Whole spice blend",
+    gstRate: PROVISIONAL_GST_RATE,
+    shortDescription: "Whole garam masala spices for everyday Indian cooking.",
+    longDescription: SPICE_DESCRIPTION,
+  }),
+  packed({
+    id: "p7",
     slug: "shrestha-haldi-powder",
     name: "Haldi Powder",
-    sku: "SHR-HLD-1000",
+    category: "spice",
+    grams: 250,
+    perKg: 400,
+    sku: "SHR-HLD-250",
+    type: "Powdered spice",
+    gstRate: 5,
     shortDescription: "Everyday haldi (turmeric) powder for Indian cooking.",
+    longDescription:
+      "Finely ground turmeric powder with a warm aroma and golden-yellow colour. Ideal for everyday Indian cooking, including curries, dals, vegetable dishes and marinades.",
+    imagePath: "/products/shrestha-haldi-powder.jpg",
   }),
-  spice({
-    id: "p7",
-    slug: "shrestha-dhaniya-powder",
-    name: "Dhaniya Powder",
-    sku: "SHR-DHN-1000",
-    shortDescription: "Everyday dhaniya (coriander) powder for Indian cooking.",
-  }),
-  spice({
+  packed({
     id: "p8",
-    slug: "shrestha-mircha-powder",
-    name: "Laal Mirch Powder",
-    sku: "SHR-MRC-1000",
-    shortDescription: "Everyday laal mirch (red chilli) powder for Indian cooking.",
+    slug: "shrestha-dhaniya-powder",
+    name: "Dhania Powder",
+    category: "spice",
+    grams: 250,
+    perKg: 400,
+    sku: "SHR-DHN-250",
+    type: "Powdered spice",
+    gstRate: 5,
+    shortDescription: "Everyday dhania (coriander) powder for Indian cooking.",
+    longDescription:
+      "Ground coriander powder with a mild, citrusy aroma and warm flavour. Suitable for curries, dals, vegetable dishes, chutneys and homemade spice blends.",
+    imagePath: "/products/shrestha-dhaniya-powder.jpg",
+  }),
+  packed({
+    id: "p9",
+    slug: "shrestha-jeera-powder",
+    name: "Jeera Powder",
+    category: "spice",
+    grams: 250,
+    perKg: 400,
+    sku: "SHR-JRA-250",
+    type: "Powdered spice",
+    gstRate: PROVISIONAL_GST_RATE,
+    shortDescription: "Everyday jeera (cumin) powder for Indian cooking.",
+    longDescription: SPICE_DESCRIPTION,
+  }),
+  packed({
+    id: "p10",
+    slug: "shrestha-cashew-320",
+    name: "Cashew 320 Number",
+    category: "dry-fruit",
+    grams: 250,
+    perKg: 8600,
+    sku: "SHR-CSH320-250",
+    type: "Whole cashew, W320 grade",
+    gstRate: PROVISIONAL_GST_RATE,
+    shortDescription: "Whole cashews, 320-count grade.",
+    longDescription:
+      "Whole cashews graded at 320 count — for snacking, sweets and everyday cooking. Hygienically packed.",
+  }),
+  packed({
+    id: "p11",
+    slug: "shrestha-cashew-double",
+    name: "Cashew Double",
+    category: "dry-fruit",
+    grams: 250,
+    perKg: 9200,
+    sku: "SHR-CSHDBL-250",
+    type: "Cashew",
+    gstRate: PROVISIONAL_GST_RATE,
+    shortDescription: "Cashews, double grade.",
+    longDescription: "Double-grade cashews for snacking, sweets and cooking. Hygienically packed.",
+  }),
+  packed({
+    id: "p12",
+    slug: "shrestha-camphor-kapur",
+    name: "Camphor (Kapur)",
+    category: "pooja",
+    grams: 250,
+    perKg: 1000,
+    sku: "SHR-KPR-250",
+    type: "Camphor for pooja — not for eating",
+    gstRate: PROVISIONAL_GST_RATE,
+    shortDescription: "Camphor (kapur) for pooja and household use.",
+    longDescription: "Camphor (kapur) for pooja and household use. Not for consumption.",
+  }),
+  packed({
+    id: "p13",
+    slug: "shrestha-tea-leaves",
+    name: "Tea Leaves",
+    category: "tea",
+    grams: 250,
+    perKg: 400,
+    sku: "SHR-TEA-250",
+    type: "Tea leaves",
+    gstRate: PROVISIONAL_GST_RATE,
+    shortDescription: "Tea leaves for your everyday cup of chai.",
+    longDescription: "Tea leaves for everyday chai. Hygienically packed.",
   }),
 ];
 

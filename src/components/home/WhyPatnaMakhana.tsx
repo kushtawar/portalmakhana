@@ -19,7 +19,7 @@ const REASONS = [
   },
 ];
 
-export default function WhyItarIntakes() {
+export default function WhyPatnaMakhana() {
   return (
     <section className="bg-background-subtle py-14">
       <Container>

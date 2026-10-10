@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import Container from "@/components/layout/Container";
 import ArticleCoverImage from "@/components/stories/ArticleCoverImage";
 import Badge from "@/components/ui/Badge";
-import { getArticleBySlug } from "@/lib/db/articles";
+import { getArticleBySlugOrLegacy } from "@/lib/db/articles";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getArticleBySlugOrLegacy(slug);
   if (!article) return {};
   return {
     title: article.seoTitle || article.title,
@@ -28,7 +28,7 @@ export default async function ArticleDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getArticleBySlugOrLegacy(slug);
   if (!article) notFound();
 
   const isPublished = article.status === "published";

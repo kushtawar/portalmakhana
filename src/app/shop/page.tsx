@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Shop",
-  description: "Shop Shrestha Makhana (Silver, Gold, Diamond, Handpicked) and spices from ItarIntakes.",
+  description: "Shop Shrestha Makhana (Silver, Gold, Diamond, Handpicked) and spices from PatnaMakhana.",
 };
 
 export default async function ShopPage() {

@@ -2,7 +2,7 @@ import Hero from "@/components/home/Hero";
 import TrustStrip from "@/components/home/TrustStrip";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import GradesComparison from "@/components/home/GradesComparison";
-import WhyItarIntakes from "@/components/home/WhyItarIntakes";
+import WhyPatnaMakhana from "@/components/home/WhyPatnaMakhana";
 import OriginStory from "@/components/home/OriginStory";
 import WholesaleExportCta from "@/components/home/WholesaleExportCta";
 import StoriesHighlights from "@/components/home/StoriesHighlights";
@@ -17,7 +17,7 @@ export default function Home() {
       <TrustStrip />
       <FeaturedProducts />
       <GradesComparison />
-      <WhyItarIntakes />
+      <WhyPatnaMakhana />
       <OriginStory />
       <WholesaleExportCta />
       <StoriesHighlights />

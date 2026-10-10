@@ -6,7 +6,7 @@ import FaqAccordion from "@/components/contact/FaqAccordion";
 
 export const metadata: Metadata = {
   title: "Contact & FAQ",
-  description: "Get in touch with ItarIntakes, or find answers to common questions.",
+  description: "Get in touch with PatnaMakhana, or find answers to common questions.",
 };
 
 const ENQUIRY_EMAIL = "hello@innovatetoday.net";

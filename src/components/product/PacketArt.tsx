@@ -94,7 +94,7 @@ export default function PacketArt({
           fill="#172433"
           fontFamily="Arial, sans-serif"
         >
-          Itar<tspan fill={isMasala ? "#c1440e" : "#3f7a1f"}>Intakes</tspan>
+          Patna<tspan fill={isMasala ? "#c1440e" : "#3f7a1f"}>Makhana</tspan>
         </text>
         <text
           x="150"

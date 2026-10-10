@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
         <div className="flex items-center gap-6">
           <Link href="/admin" className="font-display text-lg font-semibold text-foreground">
-            Itar<span className="text-primary">Intakes</span>{" "}
+            Patna<span className="text-primary">Makhana</span>{" "}
             <span className="text-sm font-normal text-foreground-muted">Admin</span>
           </Link>
           {session ? (

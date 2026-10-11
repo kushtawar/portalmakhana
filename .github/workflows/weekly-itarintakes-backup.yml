@@ -1,0 +1,131 @@
+# Weekly backup of the itarintakes database (PatnaMakhana) — see docs/BACKUP_AND_RESTORE.md.
+#
+# Sunday 03:00 UTC (and manual runs): dump itarintakes only → checksum → restore into a new
+# snapshot_<id>_* namespace in itarintakes_backups → verify counts, indexes and content → upload the
+# archive, checksum and manifest to a private S3 bucket (never overwriting) → verify the
+# uploads → mark the snapshot complete → only then remove Atlas snapshots older than 35 days.
+#
+# Atlas access: the runner's own public IPv4 is added to the Atlas IP access list for the
+# duration of the job (auto-expiring after ~1 hour) and removed again at the end — Atlas
+# never needs to allow 0.0.0.0/0 for this job.
+#
+# The repository is public, so logs are public: steps print only names, counts, sizes and
+# checksums — never connection strings, credentials or document contents.
+#
+# Inactive until the repository variable BACKUP_ENABLED is set to "true" (after setup).
+
+name: Weekly itarintakes backup
+
+on:
+  schedule:
+    - cron: "0 3 * * 0" # Sundays at 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # GitHub OIDC → short-lived AWS credentials; no stored AWS keys
+
+concurrency:
+  group: itarintakes-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Back up itarintakes
+    # Off switch: nothing runs (not even a failing scheduled run) until setup is complete.
+    if: vars.BACKUP_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    # Secrets live in this environment; restrict it to the main branch in repo settings.
+    environment: itarintakes-backup
+    env:
+      S3_BACKUP_BUCKET: ${{ vars.S3_BACKUP_BUCKET }}
+      S3_BACKUP_PREFIX: ${{ vars.S3_BACKUP_PREFIX }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+    steps:
+      - name: Check configuration is present (names only)
+        env:
+          MONGODB_BACKUP_URI: ${{ secrets.MONGODB_BACKUP_URI }}
+          MONGODB_RETENTION_URI: ${{ secrets.MONGODB_RETENTION_URI }}
+          ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+          ATLAS_PROJECT_ID: ${{ vars.ATLAS_PROJECT_ID }}
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+        run: |
+          missing=""
+          for name in MONGODB_BACKUP_URI MONGODB_RETENTION_URI ATLAS_PUBLIC_KEY ATLAS_PRIVATE_KEY ATLAS_PROJECT_ID AWS_ROLE_ARN S3_BACKUP_BUCKET S3_BACKUP_PREFIX AWS_REGION; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error title=Backup not configured::Missing:$missing (see docs/BACKUP_AND_RESTORE.md)"
+            exit 1
+          fi
+          echo "All required configuration is present."
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install MongoDB Database Tools 100.12.2 (checksum-pinned)
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/mongodb-database-tools.deb" \
+            https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2404-x86_64-100.12.2.deb
+          echo "79c5dc5d13f1ec520a6698eaf35aa8fdf0c461b51e4a886210a5dff08dc520fd  $RUNNER_TEMP/mongodb-database-tools.deb" | sha256sum -c -
+          sudo apt-get install -y "$RUNNER_TEMP/mongodb-database-tools.deb" > /dev/null
+          mongodump --version | head -1
+
+      - name: Allow this runner in Atlas (temporary, ~1 hour)
+        id: atlas_allow
+        env:
+          ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+          ATLAS_PROJECT_ID: ${{ vars.ATLAS_PROJECT_ID }}
+        run: node --import tsx scripts/backup/atlas-access-list.ts allow
+
+      - name: AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: itarintakes-backup-${{ github.run_id }}
+          mask-aws-account-id: true
+
+      - name: Back up, verify and upload
+        id: backup
+        env:
+          MONGODB_BACKUP_URI: ${{ secrets.MONGODB_BACKUP_URI }}
+        run: node --import tsx scripts/backup/backup-itarintakes.ts
+
+      - name: Retention cleanup (only after a verified, uploaded backup)
+        if: success() && steps.backup.outputs.backup_id != ''
+        env:
+          MONGODB_RETENTION_URI: ${{ secrets.MONGODB_RETENTION_URI }}
+          BACKUP_ID: ${{ steps.backup.outputs.backup_id }}
+        run: node --import tsx scripts/backup/cleanup-itarintakes-backups.ts "--backup-id=$BACKUP_ID" --apply
+
+      - name: Remove this runner from Atlas
+        # Unconditional (also after a failed or cancelled backup), but only for an entry this
+        # run created; the revoke command deletes nothing else.
+        if: always() && steps.atlas_allow.outputs.created == 'true'
+        env:
+          ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+          ATLAS_PROJECT_ID: ${{ vars.ATLAS_PROJECT_ID }}
+          ALLOW_IP: ${{ steps.atlas_allow.outputs.ip }}
+          ALLOW_COMMENT: ${{ steps.atlas_allow.outputs.comment }}
+        run: node --import tsx scripts/backup/atlas-access-list.ts revoke
+
+      - name: Report failure
+        if: failure()
+        run: |
+          echo "::error title=Weekly itarintakes backup FAILED::No new verified backup this week, and no old snapshots were removed. See the failed step above."
+          echo "### ❌ itarintakes backup failed" >> "$GITHUB_STEP_SUMMARY"
+          echo "No retention cleanup was run. Re-run the workflow after fixing the failed step." >> "$GITHUB_STEP_SUMMARY"

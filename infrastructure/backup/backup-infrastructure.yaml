@@ -104,7 +104,7 @@ Resources:
           # locked version, and nothing here bypasses retention.
           - Id: expire-backups-after-retention
             Status: Enabled
-            Prefix: !Sub "${BackupPrefix}/"
+            Prefix: !Sub "${BackupPrefix}/itarintakes/"
             ExpirationInDays: !FindInMap [Retention, Backups, ExpireCurrentAfterDays]
             NoncurrentVersionExpiration:
               NoncurrentDays: !FindInMap [Retention, Backups, ExpireNoncurrentAfterDays]
@@ -113,7 +113,7 @@ Resources:
           # Separate rule: S3 does not allow ExpiredObjectDeleteMarker with ExpirationInDays.
           - Id: remove-expired-delete-markers
             Status: Enabled
-            Prefix: !Sub "${BackupPrefix}/"
+            Prefix: !Sub "${BackupPrefix}/itarintakes/"
             ExpiredObjectDeleteMarker: true
       Tags:
         - Key: project

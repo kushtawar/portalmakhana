@@ -119,14 +119,13 @@ Note: if the Atlas access list already contains `0.0.0.0/0` (common when the web
 on AWS Amplify, which has no fixed outbound IP), that exposure comes from the website, not
 the backup; tightening it is a separate decision.
 
-## Initial setup (requires approval — nothing here has been done yet)
+## Existing setup (provisioned; verify before changing)
 
 ### 1. Private S3 bucket
 
-The existing `itarintakes` bucket is **not suitable**: it serves product images through a
-public-read bucket policy, has no versioning, Object Lock or lifecycle rules, and the
-configuration refuses it explicitly. Create a dedicated bucket, e.g.
-`patnamakhana-db-backups-<account-id>` in `eu-central-1`:
+The dedicated backup bucket already exists: `patnamakhana-db-backups-916262176087` in
+`eu-central-1`. Do not reuse the product-image bucket. Verify its existing settings before
+making infrastructure changes:
 
 - **Object Ownership:** bucket owner enforced (ACLs disabled).
 - **Block Public Access:** all four settings on.
@@ -162,6 +161,11 @@ configuration refuses it explicitly. Create a dedicated bucket, e.g.
   requests, so incomplete multipart uploads shouldn't occur; the abort rule is a safeguard.
   Every upload sends a SHA-256 checksum, which satisfies Object Lock's integrity-header
   requirement. With COMPLIANCE mode the bucket can't be emptied or deleted early.
+
+**Pending deployment:** The local CloudFormation template now scopes both lifecycle rules to
+`patnamakhana/itarintakes/`. This change has not yet been deployed to the existing stack.
+Do not assume the live lifecycle rules have this narrower scope until a reviewed stack update
+succeeds.
 - **Bucket policy:** deny any request without TLS (`aws:SecureTransport = false`).
 
 Without Object Lock, the protection is: versioning + an upload role with no delete
@@ -170,10 +174,10 @@ still delete objects early.
 
 ### 2. GitHub OIDC and the upload role (AWS IAM)
 
-- Add the identity provider `token.actions.githubusercontent.com`
-  (audience `sts.amazonaws.com`). It doesn't exist in the account yet.
-- Create role `patnamakhana-itarintakes-backup` with this trust policy — only this
-  repository's `itarintakes-backup` environment can assume it:
+- The OIDC provider `token.actions.githubusercontent.com` already exists in AWS account
+  `916262176087` (audience `sts.amazonaws.com`).
+- The role `patnamakhana-itarintakes-backup` already exists. Verify its trust policy allows
+  only this repository's `itarintakes-backup` environment to assume it:
 
 ```json
 {
@@ -213,23 +217,21 @@ exact key match; listing errors stop the run. Do not grant `s3:DeleteObject*`, `
 
 ### 3. MongoDB Atlas users
 
-Create two database users (Atlas → Database Access), authenticating against `admin`:
+The two database users are already configured in Atlas → Database Access, authenticating
+against `admin`. Verify their roles rather than creating duplicate users:
 
 | User | Access | Used by |
 |---|---|---|
-| `itarintakes-backup` | **read** on `itarintakes`; on `itarintakes_backups`: `find`, `insert`, `createCollection`, `createIndex`, `listCollections`, `listIndexes` (custom role) | backup step |
-| `itarintakes-retention` | on `itarintakes_backups`: `listCollections`, `dropCollection` (custom role); **no access** to `itarintakes` | cleanup step |
+| `patnamakhana-backup` | `read@itarintakes`; `readWrite@itarintakes_backups` (custom role `patnamakhanaBackupRole`) | backup step |
+| `patnamakhana-retention` | `dropCollection@itarintakes_backups` only (custom role `patnamakhanaRetentionRole`); **no access** to `itarintakes` | cleanup step |
 
-Neither user can write to the live `itarintakes` database. The retention user's
-`dropCollection` applies to the whole `itarintakes_backups` database (MongoDB can't limit it
-to a name prefix); the cleanup script is what restricts it to expired `snapshot_*`
-collections, and it never runs unless the new snapshot is complete. **Limitation:** MongoDB
-privileges apply per database or collection, not "new collections only", so the backup user
-could insert into an existing snapshot collection; it cannot update, delete or drop. The S3
-copy (Object Lock) is the tamper-resistant one. If the cluster tier doesn't offer custom
-roles, use the built-in `read@itarintakes` + `readWrite@itarintakes_backups` for backup and
-`readWrite@itarintakes_backups` for retention, and accept that those can also update or drop
-snapshots.
+The backup user has read access to the live `itarintakes` database and `readWrite` access
+to `itarintakes_backups`; it cannot write to the live source, but its permissions in the
+backup database are broader than insert-only. The retention user has `dropCollection` on
+`itarintakes_backups` only and no access to `itarintakes`. The cleanup script restricts drops
+to expired `snapshot_*` collections and runs only after a successful snapshot, but the Atlas
+role itself does not enforce the naming or age restriction. The S3 copy (Object Lock) is the
+tamper-resistant copy.
 
 Atlas **Network Access** must allow GitHub-hosted runners (their IPs vary). If the IP access
 list is restricted, the backup cannot connect.
@@ -241,12 +243,10 @@ the URIs without a database path or with `/itarintakes` (backup) or
 
 ### 4. Atlas Admin API key (for the temporary access-list entry)
 
-Atlas → your project → **Project Access Manager → Applications → API Keys → Create API
-Key** — a **project** key (not an organization key), with only the project role that
-manages the IP access list: **Project Network Access Manager**
-(`GROUP_NETWORK_ACCESS_MANAGER`). If your Atlas UI doesn't offer that role, stop and review
-before using a broader one: Project Owner can also manage users and clusters. The key needs
-no database access.
+A project-level Atlas API key has already been created for this workflow, scoped only to
+**Project Network Access Manager** (`GROUP_NETWORK_ACCESS_MANAGER`), with no database access.
+Keep it in GitHub environment secrets. If rotating it, verify the replacement before
+revoking the old key.
 
 - The key's own *API Access List* can't be restricted to GitHub's runners (their addresses
   change), so leave the organization setting *Require IP Access List for the Atlas
@@ -268,25 +268,24 @@ no database access.
 
 ### 5. GitHub configuration
 
-Create environment **`itarintakes-backup`** (Settings → Environments) with *Deployment
-branches and tags → Selected branches → `main`* (the `main` branch currently has no branch
-protection, so use the explicit branch rule rather than "Protected branches only").
-Environment secrets are then only given to this workflow when it runs from `main`; a run
-from any other branch is refused. Optionally add yourself as a *required reviewer* to
-approve each manual run. Then add:
+The GitHub environment **`itarintakes-backup`** is already configured with deployment
+branches restricted to `main`. Verify this setting and the existing secrets and variables
+before changing anything. Environment secrets are only supplied when the workflow runs from
+`main`. Optionally add yourself as a *required reviewer* for manual runs. The configured
+settings are listed below; never put secret values in this document:
 
 | Kind | Name | Value |
 |---|---|---|
-| Environment secret | `MONGODB_BACKUP_URI` | `mongodb+srv://itarintakes-backup:<password>@<cluster-host>/` |
-| Environment secret | `MONGODB_RETENTION_URI` | `mongodb+srv://itarintakes-retention:<password>@<cluster-host>/` |
-| Environment variable | `AWS_ROLE_ARN` | ARN of the upload role |
+| Environment secret | `MONGODB_BACKUP_URI` | URI for `patnamakhana-backup` (keep credentials private) |
+| Environment secret | `MONGODB_RETENTION_URI` | URI for `patnamakhana-retention` (keep credentials private) |
+| Environment variable | `AWS_ROLE_ARN` | `arn:aws:iam::916262176087:role/patnamakhana-itarintakes-backup` |
 | Environment variable | `AWS_REGION` | `eu-central-1` |
-| Environment variable | `S3_BACKUP_BUCKET` | the private backup bucket |
+| Environment variable | `S3_BACKUP_BUCKET` | `patnamakhana-db-backups-916262176087` |
 | Environment variable | `S3_BACKUP_PREFIX` | `patnamakhana` |
 | Environment secret | `ATLAS_PUBLIC_KEY` | Atlas API public key |
 | Environment secret | `ATLAS_PRIVATE_KEY` | Atlas API private key |
 | Environment variable | `ATLAS_PROJECT_ID` | Atlas project id (24 hex characters) |
-| **Repository** variable | `BACKUP_ENABLED` | `true` — only once everything above is in place |
+| **Repository** variable | `BACKUP_ENABLED` | Leave unset or `false` until review and preflight checks are complete |
 
 ### 6. Activating safely
 

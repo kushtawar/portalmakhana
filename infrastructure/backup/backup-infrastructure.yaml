@@ -1,0 +1,264 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  PatnaMakhana weekly itarintakes MongoDB backups - private, Object-Locked S3 bucket and a
+  least-privilege GitHub Actions OIDC role (upload and read back only, no delete). See
+  infrastructure/backup/README.md and docs/BACKUP_AND_RESTORE.md.
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: patnamakhana-db-backups-916262176087
+    Description: Globally unique name for the new private backup bucket (never the public itarintakes media bucket).
+    AllowedPattern: "^(?!itarintakes$)(?!xn--)(?!.*-s3alias$)[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+    ConstraintDescription: 3-63 lowercase letters, digits and hyphens; must not be the public itarintakes bucket.
+  BackupPrefix:
+    Type: String
+    Default: patnamakhana
+    Description: Must equal the workflow's S3_BACKUP_PREFIX. Objects are written under <prefix>/itarintakes/.
+    AllowedPattern: "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    ConstraintDescription: Letters, digits, '_' and '-' only (no slashes).
+  GitHubRepository:
+    Type: String
+    Default: kushtawar/portalmakhana
+    AllowedPattern: "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+  GitHubEnvironment:
+    Type: String
+    Default: itarintakes-backup
+    Description: >-
+      The workflow job's GitHub environment. Its OIDC subject is
+      repo:<owner>/<repo>:environment:<name>; restrict the environment to the main branch in
+      GitHub (CloudFormation cannot enforce that).
+    AllowedPattern: "^[A-Za-z0-9_.-]+$"
+  RoleName:
+    Type: String
+    Default: patnamakhana-itarintakes-backup
+    AllowedPattern: "^[A-Za-z0-9+=,.@_-]{1,64}$"
+  CreateGitHubOIDCProvider:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: >-
+      "true" only if the account has no token.actions.githubusercontent.com provider yet
+      (check first; see README). IAM allows one provider per URL, so "true" with an existing
+      provider fails the deployment instead of creating a duplicate. "false" uses the
+      existing provider and never modifies it.
+
+Conditions:
+  CreateProvider: !Equals [!Ref CreateGitHubOIDCProvider, "true"]
+
+Mappings:
+  # Fixed, not parameters: lifecycle expiry must stay later than the Object Lock period.
+  Retention:
+    Backups:
+      ObjectLockDays: 35
+      ExpireCurrentAfterDays: 36
+      ExpireNoncurrentAfterDays: 1
+      AbortMultipartAfterDays: 1
+
+Resources:
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateProvider
+    # Shared, account-wide identity provider: never delete or replace it with this stack.
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+
+  BackupBucket:
+    Type: AWS::S3::Bucket
+    # Backups outlive the stack. Deleting the stack leaves the bucket and its objects;
+    # COMPLIANCE-locked versions can't be deleted by anyone until they expire.
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref BucketName
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: COMPLIANCE
+            Days: !FindInMap [Retention, Backups, ObjectLockDays]
+      VersioningConfiguration:
+        Status: Enabled
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          # Timeline per object: locked days 0-35 -> day 36 a delete marker is added (allowed
+          # while locked; no version is removed) -> about a day later the now-noncurrent
+          # version is permanently deleted (its lock has ended). S3 lifecycle never removes a
+          # locked version, and nothing here bypasses retention.
+          - Id: expire-backups-after-retention
+            Status: Enabled
+            Prefix: !Sub "${BackupPrefix}/itarintakes/"
+            ExpirationInDays: !FindInMap [Retention, Backups, ExpireCurrentAfterDays]
+            NoncurrentVersionExpiration:
+              NoncurrentDays: !FindInMap [Retention, Backups, ExpireNoncurrentAfterDays]
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: !FindInMap [Retention, Backups, AbortMultipartAfterDays]
+          # Separate rule: S3 does not allow ExpiredObjectDeleteMarker with ExpirationInDays.
+          - Id: remove-expired-delete-markers
+            Status: Enabled
+            Prefix: !Sub "${BackupPrefix}/itarintakes/"
+            ExpiredObjectDeleteMarker: true
+      Tags:
+        - Key: project
+          Value: patnamakhana
+        - Key: purpose
+          Value: itarintakes-database-backups
+
+  BackupBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    # The bucket is retained when the stack is deleted, so its protections must be too.
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Bucket: !Ref BackupBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !GetAtt BackupBucket.Arn
+              - !Sub "${BackupBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+          # Nobody deletes backups by API - lifecycle expiry (not subject to bucket policies)
+          # is the only remover. To delete deliberately, an administrator must first change
+          # this policy (an audited action).
+          - Sid: DenyObjectDeletion
+            Effect: Deny
+            Principal: "*"
+            Action:
+              - s3:DeleteObject
+              - s3:DeleteObjectVersion
+            Resource: !Sub "${BackupBucket.Arn}/*"
+          # Retention can't be shortened in COMPLIANCE mode; this also stops it being
+          # extended or changed outside a deliberate policy change.
+          - Sid: DenyRetentionChanges
+            Effect: Deny
+            Principal: "*"
+            Action:
+              - s3:PutObjectRetention
+              - s3:PutObjectLegalHold
+              - s3:BypassGovernanceRetention
+              - s3:PutBucketObjectLockConfiguration
+            Resource:
+              - !GetAtt BackupBucket.Arn
+              - !Sub "${BackupBucket.Arn}/*"
+
+  BackupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      Description: GitHub Actions (weekly itarintakes backup) - upload and verify backups only; no delete.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: GitHubActionsBackupEnvironmentOnly
+            Effect: Allow
+            Principal:
+              Federated: !If
+                - CreateProvider
+                - !GetAtt GitHubOIDCProvider.Arn
+                - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub "repo:${GitHubRepository}:environment:${GitHubEnvironment}"
+      Policies:
+        - PolicyName: itarintakes-backup-upload
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # aws s3api put-object --if-none-match '*' --checksum-algorithm SHA256
+              - Sid: UploadNewBackupObjects
+                Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "${BackupBucket.Arn}/${BackupPrefix}/itarintakes/*"
+              # aws s3api head-object --checksum-mode ENABLED (upload verification)
+              - Sid: ReadBackBackupObjects
+                Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub "${BackupBucket.Arn}/${BackupPrefix}/itarintakes/*"
+              # aws s3api list-objects-v2 --prefix <exact new key> (pre-run "never overwrite"
+              # check). StringLike (not ...IfExists): a listing without a prefix, or with a
+              # prefix outside <prefix>/itarintakes/, is denied.
+              - Sid: ListBackupPrefixOnly
+                Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt BackupBucket.Arn
+                Condition:
+                  StringLike:
+                    s3:prefix: !Sub "${BackupPrefix}/itarintakes/*"
+              - Sid: ExplicitlyNoDeletesRetentionOrAdmin
+                Effect: Deny
+                Action:
+                  - s3:DeleteObject
+                  - s3:DeleteObjectVersion
+                  - s3:DeleteObjectTagging
+                  - s3:DeleteObjectVersionTagging
+                  - s3:DeleteBucket
+                  - s3:DeleteBucketPolicy
+                  - s3:PutObjectRetention
+                  - s3:PutObjectLegalHold
+                  - s3:BypassGovernanceRetention
+                  - s3:PutBucketObjectLockConfiguration
+                  - s3:PutBucketPolicy
+                  - s3:PutBucketVersioning
+                  - s3:PutLifecycleConfiguration
+                  - s3:PutBucketPublicAccessBlock
+                  - s3:PutBucketOwnershipControls
+                  - s3:PutEncryptionConfiguration
+                  - s3:PutBucketAcl
+                  - s3:PutObjectAcl
+                  - s3:PutObjectVersionAcl
+                  - s3:PutReplicationConfiguration
+                Resource: "*"
+              - Sid: ExplicitlyNoIdentityAdministration
+                Effect: Deny
+                Action:
+                  - iam:*
+                  - sts:AssumeRole
+                  - organizations:*
+                Resource: "*"
+      Tags:
+        - Key: project
+          Value: patnamakhana
+
+Outputs:
+  BackupBucketName:
+    Description: GitHub environment variable S3_BACKUP_BUCKET
+    Value: !Ref BackupBucket
+  BackupPrefix:
+    Description: GitHub environment variable S3_BACKUP_PREFIX
+    Value: !Ref BackupPrefix
+  BackupRoleArn:
+    Description: GitHub environment variable AWS_ROLE_ARN
+    Value: !GetAtt BackupRole.Arn
+  AwsRegion:
+    Description: GitHub environment variable AWS_REGION
+    Value: !Ref AWS::Region
+  OIDCSubject:
+    Description: The only GitHub OIDC subject allowed to assume the role
+    Value: !Sub "repo:${GitHubRepository}:environment:${GitHubEnvironment}"

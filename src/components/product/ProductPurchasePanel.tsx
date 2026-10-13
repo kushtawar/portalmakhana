@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Product } from "@/lib/types";
 import { formatInr } from "@/lib/format";
+import { ratePerKgLabel } from "@/lib/products/ratePerKg";
 import { useCart } from "@/lib/cart/CartContext";
 
 export default function ProductPurchasePanel({ product }: { product: Product }) {
@@ -44,6 +45,10 @@ export default function ProductPurchasePanel({ product }: { product: Product }) 
           </p>
         ) : null}
       </div>
+      <p className="mt-1 text-sm text-foreground-muted">
+        for {variant.label}
+        {ratePerKgLabel(product) ? ` · Rate ${ratePerKgLabel(product)}` : ""}
+      </p>
       <p className="mt-1 text-xs text-foreground-muted">
         {product.priceIncludesTax
           ? `Inclusive of ${product.gstRate}% GST`

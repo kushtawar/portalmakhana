@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Product } from "@/lib/types";
 import { formatInr } from "@/lib/format";
+import { ratePerKgLabel } from "@/lib/products/ratePerKg";
 import { getPackType } from "@/lib/data/products";
 import ProductImage from "@/components/product/ProductImage";
 import Badge from "@/components/ui/Badge";
@@ -11,6 +12,7 @@ import { useCart } from "@/lib/cart/CartContext";
 
 export default function ProductCard({ product }: { product: Product }) {
   const primaryVariant = product.variants[0];
+  const ratePerKg = ratePerKgLabel(product);
   const inStock = product.variants.some((variant) => variant.stock > 0);
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
@@ -65,6 +67,7 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           ) : null}
         </div>
+        {ratePerKg ? <p className="text-xs text-foreground-muted">Rate: {ratePerKg}</p> : null}
 
         <button
           type="button"

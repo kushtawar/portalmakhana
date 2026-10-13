@@ -119,19 +119,20 @@ const SPICE_DESCRIPTION =
 
 export const products: Product[] = [
   makhana({
-    id: "p1",
-    slug: "shrestha-silver-makhana",
-    name: "Makhana Silver (4 Suta)",
-    grade: "Silver (4 Suta)",
-    perKg: 800,
-    sku: "SHR-SLV-250",
+    id: "p4",
+    slug: "shrestha-diamond-makhana",
+    name: "Makhana Diamond (6 Suta)",
+    grade: "Diamond (6 Suta)",
+    perKg: 1300,
+    sku: "SHR-DMD-250",
     shortDescription:
-      "Our regular graded makhana — good quality for everyday snacking and cooking.",
+      "Our top premium grade — larger, fuller makhana carefully graded for a premium selection.",
     longDescription:
-      "Shrestha Silver Makhana is our regular graded makhana option, offering good quality for everyday use. It generally contains comparatively smaller and more mixed-size kernels than the higher Gold and Diamond grades, making it a practical choice for families who want makhana as part of their regular snack or cooking routine. Roast and season it to your taste, or use it in homemade recipes such as makhana curry, kheer and other preparations. Our grading process separates makhana into different quality and size categories before packing; the final size mix can vary naturally with the agricultural harvest. Silver offers an accessible way to enjoy makhana while retaining its characteristic light and crunchy nature when roasted.",
-    tagline: "Simple. Delicious. Versatile.",
-    selection: "Regular graded selection",
+      "Shrestha Diamond Makhana is our top premium grade, selected for a larger and fuller appearance. It is generally the largest and most premium-looking grade among our Silver, Gold and Diamond range, with kernels carefully graded for customers who prefer larger makhana. Diamond is ideal for premium snacking, special occasions and anyone seeking a higher-grade selection — roast it, season it, or use it in traditional and modern makhana recipes. The exact size may vary naturally from harvest to harvest, while the grade is maintained through selection. Diamond is also available in a Handpicked version.",
+    tagline: "Premium Selection. Authentic Taste. Shrestha Quality.",
+    selection: "Top premium graded selection",
     featured: true,
+    bestseller: true,
   }),
   makhana({
     id: "p2",
@@ -150,6 +151,21 @@ export const products: Product[] = [
     bestseller: true,
   }),
   makhana({
+    id: "p1",
+    slug: "shrestha-silver-makhana",
+    name: "Makhana Silver (4 Suta)",
+    grade: "Silver (4 Suta)",
+    perKg: 800,
+    sku: "SHR-SLV-250",
+    shortDescription:
+      "Our regular graded makhana — good quality for everyday snacking and cooking.",
+    longDescription:
+      "Shrestha Silver Makhana is our regular graded makhana option, offering good quality for everyday use. It generally contains comparatively smaller and more mixed-size kernels than the higher Gold and Diamond grades, making it a practical choice for families who want makhana as part of their regular snack or cooking routine. Roast and season it to your taste, or use it in homemade recipes such as makhana curry, kheer and other preparations. Our grading process separates makhana into different quality and size categories before packing; the final size mix can vary naturally with the agricultural harvest. Silver offers an accessible way to enjoy makhana while retaining its characteristic light and crunchy nature when roasted.",
+    tagline: "Simple. Delicious. Versatile.",
+    selection: "Regular graded selection",
+    featured: true,
+  }),
+  makhana({
     id: "p3",
     slug: "shrestha-handpicked-gold-makhana",
     name: "Makhana Hand Picked Gold",
@@ -162,22 +178,6 @@ export const products: Product[] = [
       "Handpicked Gold is our premium-grade Gold Makhana with an extra level of sorting: the makhana is manually filtered and selected before packing, rather than relying only on machine-based grading. Like Gold, it is selected for a fuller appearance and better size profile — generally larger and more uniform than Silver. It is ideal for customers who prefer more manual sorting and selection, for everyday snacking as well as premium presentation.",
     tagline: "Selected Makhana. Great Taste. Shrestha Quality.",
     selection: "Manually filtered",
-    featured: true,
-    bestseller: true,
-  }),
-  makhana({
-    id: "p4",
-    slug: "shrestha-diamond-makhana",
-    name: "Makhana Diamond (6 Suta)",
-    grade: "Diamond (6 Suta)",
-    perKg: 1300,
-    sku: "SHR-DMD-250",
-    shortDescription:
-      "Our top premium grade — larger, fuller makhana carefully graded for a premium selection.",
-    longDescription:
-      "Shrestha Diamond Makhana is our top premium grade, selected for a larger and fuller appearance. It is generally the largest and most premium-looking grade among our Silver, Gold and Diamond range, with kernels carefully graded for customers who prefer larger makhana. Diamond is ideal for premium snacking, special occasions and anyone seeking a higher-grade selection — roast it, season it, or use it in traditional and modern makhana recipes. The exact size may vary naturally from harvest to harvest, while the grade is maintained through selection. Diamond is also available in a Handpicked version.",
-    tagline: "Premium Selection. Authentic Taste. Shrestha Quality.",
-    selection: "Top premium graded selection",
     featured: true,
     bestseller: true,
   }),

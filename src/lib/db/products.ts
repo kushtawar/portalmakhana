@@ -2,6 +2,7 @@ import "server-only";
 import { connectToDatabase } from "@/lib/db/connect";
 import { ProductModel, type ProductDoc } from "@/lib/db/models/Product";
 import type { Product } from "@/lib/types";
+import { products as catalogueProducts } from "@/lib/data/products";
 
 function toProduct(doc: ProductDoc & { _id: unknown }): Product {
   return {
@@ -48,6 +49,20 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   await connectToDatabase();
   const doc = await ProductModel.findOne({ slug }).lean();
   return doc ? toProduct(doc as ProductDoc & { _id: unknown }) : null;
+}
+
+/**
+ * Every live product for the homepage, in catalogue order (the order of
+ * src/lib/data/products.ts); products not in the catalogue file follow, oldest first.
+ */
+export async function getHomepageProducts(): Promise<Product[]> {
+  const live = await listProducts({ activeOnly: true });
+  const order = new Map(catalogueProducts.map((p, index) => [p.slug, index]));
+  const rank = (p: Product) => order.get(p.slug) ?? Number.MAX_SAFE_INTEGER;
+  return live
+    .map((product, index) => ({ product, index }))
+    .sort((a, b) => rank(a.product) - rank(b.product) || a.index - b.index)
+    .map(({ product }) => product);
 }
 
 export async function getFeaturedProducts(limit = 4): Promise<Product[]> {

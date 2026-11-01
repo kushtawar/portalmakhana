@@ -189,7 +189,7 @@ still delete objects early.
     "Condition": {
       "StringEquals": {
         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-        "token.actions.githubusercontent.com:sub": "repo:kushtawar/portalmakhana:environment:itarintakes-backup"
+        "token.actions.githubusercontent.com:sub": "repo:kushtawar@21308018/portalmakhana@1366642721:environment:itarintakes-backup"
       }
     }
   }]

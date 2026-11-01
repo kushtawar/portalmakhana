@@ -19,7 +19,7 @@ workflow [`.github/workflows/weekly-itarintakes-backup.yml`](../../.github/workf
 |---|---|---|
 | `BucketName` | `patnamakhana-db-backups-916262176087` | workflow variable `S3_BACKUP_BUCKET` (stack output) |
 | `BackupPrefix` | `patnamakhana` | workflow variable `S3_BACKUP_PREFIX` |
-| `GitHubRepository` | `kushtawar/portalmakhana` | the repository running the workflow |
+| `GitHubSubjectRepo` | `kushtawar@21308018/portalmakhana@1366642721` | the repository part of GitHub's OIDC subject (immutable, ID-based — see below) |
 | `GitHubEnvironment` | `itarintakes-backup` | the workflow job's `environment:` |
 | `RoleName` | `patnamakhana-itarintakes-backup` | workflow variable `AWS_ROLE_ARN` (stack output) |
 | `CreateGitHubOIDCProvider` | `false` | `true` only if the account has no GitHub provider (see below) |
@@ -52,8 +52,12 @@ Object Lock period.
   - Explicit denies: every object/bucket delete, retention and legal-hold changes,
     governance bypass, Object Lock/versioning/lifecycle/policy/ACL/encryption/public-access
     changes, and all IAM/STS-assume/Organizations actions.
-- **Trust policy.** Only GitHub's OIDC tokens with audience `sts.amazonaws.com` and subject
-  `repo:kushtawar/portalmakhana:environment:itarintakes-backup`. Because the workflow job
+- **Trust policy.** The repository has GitHub's **immutable OIDC subjects** enabled, so tokens
+  name it by owner and repository IDs (`gh api repos/kushtawar/portalmakhana/actions/oidc/customization/sub`
+  → `sub_claim_prefix`). A trust policy using the plain name `kushtawar/portalmakhana` is
+  rejected (`Not authorized to perform sts:AssumeRoleWithWebIdentity`) — that was the cause
+  of the first failed runs. Only GitHub's OIDC tokens with audience `sts.amazonaws.com` and subject
+  `repo:kushtawar@21308018/portalmakhana@1366642721:environment:itarintakes-backup`. Because the workflow job
   uses that environment, GitHub issues an environment-based subject, not
   `ref:refs/heads/main`. The `main`-only restriction is therefore enforced by the
   environment's deployment-branch rule in GitHub. Sessions last at most 1 hour.

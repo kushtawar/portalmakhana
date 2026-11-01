@@ -17,17 +17,24 @@ Parameters:
     Description: Must equal the workflow's S3_BACKUP_PREFIX. Objects are written under <prefix>/itarintakes/.
     AllowedPattern: "^[A-Za-z0-9][A-Za-z0-9_-]*$"
     ConstraintDescription: Letters, digits, '_' and '-' only (no slashes).
-  GitHubRepository:
+  GitHubSubjectRepo:
     Type: String
-    Default: kushtawar/portalmakhana
-    AllowedPattern: "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    # The repository uses GitHub's immutable OIDC subjects, which identify it by owner and
+    # repository IDs (see `gh api repos/kushtawar/portalmakhana/actions/oidc/customization/sub`,
+    # field sub_claim_prefix). Unlike the plain name, this can't be matched by a different
+    # repository that later takes the same name.
+    Default: "kushtawar@21308018/portalmakhana@1366642721"
+    Description: >-
+      Repository part of the GitHub OIDC subject, exactly as GitHub issues it — with
+      immutable subjects <owner>@<owner-id>/<repo>@<repo-id>, otherwise <owner>/<repo>.
+    AllowedPattern: "^[A-Za-z0-9_.-]+(@[0-9]+)?/[A-Za-z0-9_.-]+(@[0-9]+)?$"
   GitHubEnvironment:
     Type: String
     Default: itarintakes-backup
     Description: >-
       The workflow job's GitHub environment. Its OIDC subject is
-      repo:<owner>/<repo>:environment:<name>; restrict the environment to the main branch in
-      GitHub (CloudFormation cannot enforce that).
+      repo:<GitHubSubjectRepo>:environment:<name>; restrict the environment to the main branch
+      in GitHub (CloudFormation cannot enforce that).
     AllowedPattern: "^[A-Za-z0-9_.-]+$"
   RoleName:
     Type: String
@@ -185,7 +192,7 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub "repo:${GitHubRepository}:environment:${GitHubEnvironment}"
+                token.actions.githubusercontent.com:sub: !Sub "repo:${GitHubSubjectRepo}:environment:${GitHubEnvironment}"
       Policies:
         - PolicyName: itarintakes-backup-upload
           PolicyDocument:
@@ -261,4 +268,4 @@ Outputs:
     Value: !Ref AWS::Region
   OIDCSubject:
     Description: The only GitHub OIDC subject allowed to assume the role
-    Value: !Sub "repo:${GitHubRepository}:environment:${GitHubEnvironment}"
+    Value: !Sub "repo:${GitHubSubjectRepo}:environment:${GitHubEnvironment}"

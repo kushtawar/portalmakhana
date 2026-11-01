@@ -76,7 +76,9 @@ describe("backup infrastructure template", () => {
   it("trusts only the repository's backup environment via OIDC", () => {
     const role = resource("BackupRole");
     assert.match(role, /token\.actions\.githubusercontent\.com:aud: sts\.amazonaws\.com/);
-    assert.match(role, /token\.actions\.githubusercontent\.com:sub: !Sub "repo:\$\{GitHubRepository\}:environment:\$\{GitHubEnvironment\}"/);
+    assert.match(role, /token\.actions\.githubusercontent\.com:sub: !Sub "repo:\$\{GitHubSubjectRepo\}:environment:\$\{GitHubEnvironment\}"/);
+    // The repository uses GitHub's immutable (ID-based) OIDC subjects.
+    assert.match(template, /Default: "kushtawar@21308018\/portalmakhana@1366642721"/);
     assert.match(role, /Action: sts:AssumeRoleWithWebIdentity/);
     assert.doesNotMatch(role, /StringLike:\n\s+token\.actions/, "no wildcard subject");
   });
